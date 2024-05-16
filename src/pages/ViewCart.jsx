@@ -4,7 +4,7 @@ import { AiOutlineAccountBook, AiOutlineMinus, AiOutlinePlus } from 'react-icons
 import { Link } from 'react-router-dom'
 
 function ViewCart() {
-    const {cartItems,removeItem,addToCart} = useCartContext()
+    const {cartItems,removeItem,addToCart,clearCart} = useCartContext()
     const itemsPrice = cartItems.reduce((acc, item) => acc + item.qty * item.price, 0);
     const taxPrice = itemsPrice * 0.14;
     const shippingPrice = itemsPrice > 2000 ? 0 : 20;
@@ -54,7 +54,7 @@ function ViewCart() {
 
                 </div>
                 <div className='btn text-right justify-end ml-auto text-white hover:bg-red-600 hover:border-red-600 btn-sm bg-red-500'>
-  <Link to="/success">Check out</Link>
+  <Link to="/success" onClick={clearCart}>Check out</Link>
 </div>
               </div>
 
