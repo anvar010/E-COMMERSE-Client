@@ -1,0 +1,8 @@
+body{
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(180deg,
+   rgba(245,71,71,0.216) 0%,
+   rgba(245,71,72,0) 100%
+   );
+   background-size: cover;
+}
