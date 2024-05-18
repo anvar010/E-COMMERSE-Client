@@ -1,40 +1,94 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
 
 const CartContext = createContext();
 
 const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState([]);
 
-    const addToCart = (product) => {
-        const exist = cartItems.find((item) => item._id === product._id);
+    const fetchCartItems = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
 
-        if (exist) {
-            setCartItems(
-                cartItems.map((item) =>
-                    item._id === product._id ? { ...exist, qty: exist.qty + 1 } : item
-                )
-            );
-        } else {
-            setCartItems([...cartItems, { ...product, qty: 1 }]);
+            const response = await axios.get('http://localhost:8000/api/v1/cart/get-cart', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.data.success) {
+                setCartItems(response.data.data.cart);
+            } else {
+                console.error(response.data.error);
+            }
+        } catch (error) {
+            console.error(error);
         }
     };
 
-    const removeItem = (product) => {
-        const exist = cartItems.find((item) => item._id === product._id);
+    useEffect(() => {
+        fetchCartItems();
+    }, []);
 
-        if (exist.qty === 1) {
-            setCartItems(cartItems.filter((item) => item._id !== product._id));
-        } else {
-            setCartItems(
-                cartItems.map((item) =>
-                    item._id === product._id ? { ...exist, qty: exist.qty - 1 } : item
-                )
-            );
+    const addToCart = async (product) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.post('http://localhost:8000/api/v1/cart/add-to-cart', {
+                productId: product._id,
+                quantity: 1,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.data.success) {
+                fetchCartItems(); 
+            } else {
+                console.error(response.data.error);
+            }
+        } catch (error) {
+            console.error(error);
         }
     };
 
-    const clearCart = () => {
-        setCartItems([]);
+    const removeItem = async (product) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.delete(`http://localhost:8000/api/v1/cart/remove-from-cart/${product._id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.data.success) {
+                fetchCartItems(); // Refresh cart items after removing
+            } else {
+                console.error(response.data.error);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const clearCart = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.delete('http://localhost:8000/api/v1/cart/clear-cart', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.data.success) {
+                setCartItems([]); // Clear cart items in state
+            } else {
+                console.error(response.data.error);
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
