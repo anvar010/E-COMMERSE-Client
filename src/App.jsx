@@ -39,6 +39,8 @@ function App() {
           if (res.data.success) {
             setUser(res.data.data);
             console.log("User data set:", res.data.data);
+            // const userId =  res.data.data.user._id;
+            
           } else {
             console.log("User data fetch failed, clearing localStorage");
             localStorage.clear();

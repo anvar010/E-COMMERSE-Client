@@ -5,54 +5,11 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 function ViewCart() {
-    const { cartItems, setCartItems, clearCart } = useCartContext();
-    const shippingPrice = 20; // Example shipping price
+    const { cartItems, clearCart, removeItem} = useCartContext();
+    const shippingPrice = 40; 
 
-    useEffect(() => {
-        // Fetch user's cart items when component mounts
-        getUserCart();
-    }, []);
-
-    const getUserCart = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) return;
-
-            const response = await axios.get('http://localhost:8000/api/v1/cart/getUserCart', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (response.data.success) {
-                setCartItems(response.data.data.cart);
-            } else {
-                console.error(response.data.error);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const removeFromCart = async (productId) => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.delete(`http://localhost:8000/api/v1/cart/remove-from-cart/${productId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (response.data.success) {
-                // After removing item from cart, fetch updated cart
-                getUserCart();
-            } else {
-                console.error(response.data.error);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    
+   
 
     const getTotalPrice = () => {
       
@@ -79,12 +36,12 @@ function ViewCart() {
                             <div key={product._id} className='flex items-center hover:bg-gray-100 -mx-8 px-6 py-5'>
                                 <div className="flex">
                                     <div className="w-20">
-                                        <img src={product.product.productImage} alt="" className="h-20" /> {/* Update image source */}
+                                        <img src={product.product.productImage} alt="" className="h-20" /> 
                                     </div>
                                     <div className="flex flex-col justify-between ml-4 flex-grow">
-                                        <span className='font-bold text-sm'>{product.product.name}</span> {/* Update product name access */}
+                                        <span className='font-bold text-sm'>{product.product.name}</span> 
                                         <span className='flex items-center space-x-4'>
-                                            <div className='shadow-sm text-white bg-red-500 hover:bg-red-700 cursor-pointer p-4 rounded-full relative' onClick={() => removeFromCart(product._id)}>
+                                            <div className='shadow-sm text-white bg-red-500 hover:bg-red-700 cursor-pointer p-4 rounded-full relative' onClick={() => removeItem(product)}>
                                                 <AiOutlineMinus size={20} className='absolute font-bold top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' />
                                             </div>
                                             <span className="text-red-500 px-3 py-2 bg-slate-100 text-lg font-medium">{product.quantity}</span>
@@ -106,7 +63,7 @@ function ViewCart() {
                                 Shipping: ${shippingPrice.toFixed(2)}
                             </div>
                             <div className='text-right mb-2 font-semibold text-red-900'>
-                                Total Price: ${getTotalPrice().toFixed(2)} {/* Ensure total price is displayed with two decimal places */}
+                                Total Price: ${getTotalPrice().toFixed(2)} 
                             </div>
                             <div className='flex space-x-4'>
                                 <div className='btn text-right justify-end ml-auto text-white hover:bg-red-600 hover:border-red-600 btn-sm bg-red-500'>
