@@ -11,8 +11,7 @@ function ProductPage() {
   const [value, setValue] = useState('all');
   const [productDetails, setProductDetails] = useState([]);
   const [quantity, setQuantity] = useState(1);
-  const { cart, addToCart, removeItem, cartItems } = useCartContext();
- 
+  const { cartItems, addToCart, removeItem } = useCartContext();
 
   const getProductDetails = async () => {
     try {
@@ -24,21 +23,11 @@ function ProductPage() {
       console.log(error);
     }
   };
-  const getProducts = async () => {
-    try {
-      const res = await axios.get(`http://localhost:8000/api/v1/product/getAllProduct?category=${value}`);
-      if (res.data.success) {
-        setProduct(res.data.data.product);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   const handleAddToCart = () => {
     const productInCart = cartItems.find(item => item.product._id === productDetails._id);
     if (productInCart) {
       toast.error("Product already in cart");
-      console.log("Product already in cart");
     } else {
       addToCart({ ...productDetails, qty: quantity });
       toast.success("Product added to cart");
@@ -46,21 +35,16 @@ function ProductPage() {
   };
   
 
-  useEffect(() => {
-    getProductDetails();
-    getProducts();
-  }, []);
-
-  // const handleAddToCart = () => {
-  //   addToCart({ ...productDetails, qty: quantity });
+  // const handleRemoveItem = () => {
+  //   if (quantity > 1) {
+  //     setQuantity(quantity - 1);
+  //     removeItem(productDetails);
+  //   }
   // };
 
-  const handleRemoveItem = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-      removeItem(productDetails);
-    }
-  };
+  useEffect(() => {
+    getProductDetails();
+  }, []);
 
   return (
     <div className='pt-[16vh]'>
@@ -83,7 +67,7 @@ function ProductPage() {
               <div className="text-xl text-justify text-black mb-6">
                 {productDetails?.description}
               </div>
-              <div className="flex items-center justify-between mb-6">
+              {/* <div className="flex items-center justify-between mb-6">
                 <div className='text-2xl font-bold text-[#f54748]'>
                   Quantity
                 </div>
@@ -95,7 +79,6 @@ function ProductPage() {
                   >
                     <AiOutlineMinus className='font-bold absolute top-1/2 left-1/2
                     -translate-x-1/2 -translate-y-1/2 size={20}' />
-
                   </div>
                   <span className='text-red-500 px-3 py-2 bg-slate-100 text-lg font-medium'>
                     {quantity}
@@ -107,31 +90,28 @@ function ProductPage() {
                   >
                     <AiOutlinePlus className='font-bold absolute top-1/2 left-1/2
                     -translate-x-1/2 -translate-y-1/2 size={20}' />
-
                   </div>
-
                 </span>
-
-              </div>
+              </div> */}
               <div className="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:gap-5 sm:mx-auto sm:justify-center">
-                <button className='bg-white active:scale-90 transition duration-500 transform
-                        hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-[#f54748] '>
-                  Favourite
-                </button>
-                <button className='bg-[#f54748] active:scale-90 transition duration-500 transform
-  hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white'
-  onClick={handleAddToCart}
->
-  Add to Cart
-</button>
+  <button className='bg-white active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-[#f54748] '>
+    Favourite
+  </button>
+  {cartItems.some(item => item.product._id === productDetails._id) ? (
+    <button className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-2 text-xl font-medium text-white'>
+      Already in cart
+    </button>
+  ) : (
+    <button className='bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white' onClick={handleAddToCart}>
+      Add to Cart
+    </button>
+  )}
+</div>
 
-
-              </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 }

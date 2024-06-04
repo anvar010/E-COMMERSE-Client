@@ -97,17 +97,25 @@ function Products() {
                 <div className='flex flex-col items-center mb-4'>
                   <p className='text-xl text-center font-bold text-[#f54748]'>{curElem?.name}</p>
                   <div className='flex items-center text-sm space-x-2 cursor-pointer'>
-                    <span className='font-formal text-[#fdc55e]'>4.3</span>
+                    <span className='font-formal text-[#fdc55e]'>4.5</span>
                     <FaStar size={16} className='text-[#fdc55e]' />
                     <span className='font-medium'>({curElem?.reviews?.length})</span>
                   </div>
                 </div>
-                <button
-                  className='bg-[#f54748] active:scale-90 transition duration-150 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white mt-auto'
-                  onClick={() => handleAddToCart(curElem)}
-                >
-                  Add to Cart
-                </button>
+                {cartItems.some(item => item.product._id === curElem._id) ? (
+                  <button
+                    className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-2 text-xl font-medium text-white mt-auto'
+                  >
+                    Already in cart
+                  </button>
+                ) : (
+                  <button
+                    className='bg-[#f54748] active:scale-90 transition duration-150 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white mt-auto'
+                    onClick={() => handleAddToCart(curElem)}
+                  >
+                    Add to Cart
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -118,3 +126,4 @@ function Products() {
 }
 
 export default Products;
+

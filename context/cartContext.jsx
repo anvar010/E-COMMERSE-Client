@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useUserContext } from './UserContext'; 
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const CartContext = createContext();
 
@@ -8,6 +10,7 @@ const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState([]);
     const [initialized, setInitialized] = useState(false);
     const { user } = useUserContext(); 
+    
 
     useEffect(() => {
         if (user) {
@@ -148,27 +151,130 @@ const CartProvider = ({ children }) => {
             console.error("User is not initialized correctly");
             return;
         }
-
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.delete('http://localhost:8000/api/v1/cart/clear-cart', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+    
+       
+        if (cartItems.length >= 2) {
+            confirmAlert({
+                title: 'Select',
+                message: 'Your cart has multiple products,Are you sure you want to clear the cart?',
+                buttons: [
+                    {
+                        label: 'Yes',
+                        onClick: async () => {
+                            try {
+                                const token = localStorage.getItem('token');
+                                const response = await axios.delete('http://localhost:8000/api/v1/cart/clear-cart', {
+                                    headers: {
+                                        Authorization: `Bearer ${token}`,
+                                    },
+                                });
+    
+                                if (response.data.success) {
+                                    setCartItems([]);
+                                } else {
+                                    console.error(response.data.error);
+                                }
+                            } catch (error) {
+                                console.error(error);
+                            }
+                        }
+                    },
+                    {
+                        label: 'No',
+                        onClick: () => {}
+                    }
+                ]
             });
-
-            if (response.data.success) {
-                setCartItems([]);
-            } else {
-                console.error(response.data.error);
+        } else {
+            // If cart has less than two products, clear it directly without confirmation
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.delete('http://localhost:8000/api/v1/cart/clear-cart', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+    
+                if (response.data.success) {
+                    setCartItems([]);
+                } else {
+                    console.error(response.data.error);
+                }
+            } catch (error) {
+                console.error(error);
             }
-        } catch (error) {
-            console.error(error);
         }
     };
+    
+
+
+    const setQuantityToZero = async (product) => {
+        try {
+            if (!initialized || !user || !user._id) {
+                console.error("User is not initialized correctly");
+                return;
+            }
+    
+            const productId = extractProductId(product);
+            const exist = cartItems.find((x) => extractProductId(x) === productId);
+            
+            if (!exist) {
+                console.error("Product not found in cart");
+                return;
+            }
+    
+            if (exist.quantity > 1) {
+                confirmAlert({
+                    title: 'Confirm to remove',
+                    message: 'Are you sure you want to remove this product?',
+                    buttons: [
+                        {
+                            label: 'Yes',
+                            onClick: async () => {
+                                const response = await axios.delete(`http://localhost:8000/api/v1/cart/remove-single-product/${user._id}/${productId}`, {
+                                    headers: {
+                                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                                    },
+                                });
+    
+                                if (response.status === 200) {
+                                    fetchCartItems();
+                                } else {
+                                    console.error('Error removing product from cart:', response.statusText);
+                                }
+                            }
+                        },
+                        {
+                            label: 'No',
+                            onClick: () => {}
+                        }
+                    ]
+                });
+            } else {
+                
+                const response = await axios.delete(`http://localhost:8000/api/v1/cart/remove-single-product/${user._id}/${productId}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+    
+                if (response.status === 200) {
+                    fetchCartItems();
+                } else {
+                    console.error('Error removing product from cart:', response.statusText);
+                }
+            }
+        } catch (error) {
+            console.error('Error removing product from cart:', error);
+        }
+    };
+    
+    
+    
+    
 
     return (
-        <CartContext.Provider value={{ cartItems, addToCart, removeItem, increaseItemQuantity, clearCart,setCartItems }}>
+        <CartContext.Provider value={{ cartItems, addToCart, removeItem, increaseItemQuantity, clearCart,setCartItems,setQuantityToZero }}>
             {children}
         </CartContext.Provider>
     );
