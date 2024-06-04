@@ -10,12 +10,14 @@ function Navbar() {
   const [nav, setNav] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
   const navigate = useNavigate();
-  const { user } = useUserContext();
+  const { user, isLoading } = useUserContext(); 
+  console.log('User Logged:', user);
   const { cartItems } = useCartContext();
+  console.log('Cart Items Logged:', cartItems); 
 
   const handleNav = () => {
     setNav(!nav);
-   setProfileDropdown(false);
+    setProfileDropdown(false);
   };
 
   const handleProfileDropdown = () => {
@@ -28,6 +30,9 @@ function Navbar() {
     navigate("/");
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <>
       <div className="bg-white/80 shadow-md fixed top-0 left-0 w-full z-40 ease-in duration-300 backdrop-blur-md">
@@ -37,13 +42,16 @@ function Navbar() {
 
             <div className="lg:flex hidden gap-8 items-center">
               <NavLink to="/" className='text-[#191919] text-xl font-medium hover:text-red-500'>Home</NavLink>
-              <a href="#" className='text-[#191919] text-xl font-medium hover:text-red-500'>Today's Offer</a>
+              <a href= '#' className='text-[#191919] text-xl font-medium hover:text-red-500'>Today's Offer</a>
               <a href="#" className='text-[#191919] text-xl font-medium hover:text-red-500'>Why Shopper</a>
               <Link to="/products" className='text-[#191919] text-xl font-medium hover:text-red-500'>Our Products</Link>
-              {user?.user?.type === 'seller' && (
+              {user?.type === 'seller' && (
                 <Link to="/addproduct" className='text-[#191919] text-xl font-medium hover:text-red-500'>Add Product</Link>
               )}
-              <a href="#" className='text-[#191919] text-xl font-medium hover:text-red-500'>Popular Products</a>
+               {user?.type === 'seller' && (
+                <Link to={`/productlist/${user?._id}`} className='text-[#191919] text-xl font-medium hover:text-red-500'>My Products</Link>
+              )}
+              {/* <a href="#" className='text-[#191919] text-xl font-medium hover:text-red-500'>Popular Products</a> */}
               <div className="dropdown dropdown-end">
                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
                   <div className="indicator">
@@ -69,7 +77,7 @@ function Navbar() {
                 <div className="dropdown dropdown-end">
                   <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                     <div className="w-10 rounded-full">
-                      <img alt="User profile" src={user?.user?.profileImage} />
+                      <img alt="User profile" src={user?.profileImage} />
                     </div>
                   </div>
                   <ul tabIndex={0} className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-white rounded-box w-52">
@@ -94,7 +102,7 @@ function Navbar() {
                 <div className="dropdown dropdown-end">
                   <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar" onClick={handleProfileDropdown}>
                     <div className="w-10 rounded-full">
-                      <img alt="User profile" src={user?.user?.profileImage} />
+                      <img alt="User profile" src={user?.profileImage} />
                     </div>
                   </div>
                 </div>
@@ -113,7 +121,7 @@ function Navbar() {
             <a href="#" className='text-[#191919] text-base font-medium hover:text-red-500' onClick={handleNav}>Today's Offer</a>
             <a href="#" className='text-[#191919] text-base font-medium hover:text-red-500' onClick={handleNav}>Why Shopper</a>
             <Link to="/products" className='text-[#191919] text-base font-medium hover:text-red-500' onClick={handleNav}>Our Products</Link>
-            {user?.user?.type === 'seller' && (
+            {user?.type === 'seller' && (
               <NavLink to="/addproduct" className='text-[#191919] text-base font-medium hover:text-red-500' onClick={handleNav}>Add Product</NavLink>
             )}
             <a href="/viecart" className='text-[#191919] text-base font-medium hover:text-red-500' onClick={handleNav}>Popular Products</a>

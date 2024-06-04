@@ -71,7 +71,7 @@ function Register() {
                 <label className='block text-center text-gray-900
                 text-base mb-2'>Profile Picture</label>
                 <input type="file"  label="Image" name="myFile" id="file-upload" className='hidden'
-                accept='.jpeg .png .jpg' onChange={handleImage} />
+                accept='all' onChange={handleImage} />
 
 <div className='mb-3'>
                     <label htmlFor="name" className='block text-gray-700 text-sm mb-2'>

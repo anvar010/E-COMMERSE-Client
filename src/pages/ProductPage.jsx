@@ -4,12 +4,15 @@ import { useParams } from 'react-router-dom';
 import PageNavigation from '../component/PageNavigation';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { useCartContext } from '../../context/cartContext';
+import { toast } from 'react-toastify';
 
 function ProductPage() {
   const params = useParams();
+  const [value, setValue] = useState('all');
   const [productDetails, setProductDetails] = useState([]);
   const [quantity, setQuantity] = useState(1);
-  const { cart, addToCart, removeItem } = useCartContext();
+  const { cart, addToCart, removeItem, cartItems } = useCartContext();
+ 
 
   const getProductDetails = async () => {
     try {
@@ -21,14 +24,36 @@ function ProductPage() {
       console.log(error);
     }
   };
+  const getProducts = async () => {
+    try {
+      const res = await axios.get(`http://localhost:8000/api/v1/product/getAllProduct?category=${value}`);
+      if (res.data.success) {
+        setProduct(res.data.data.product);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleAddToCart = () => {
+    const productInCart = cartItems.find(item => item.product._id === productDetails._id);
+    if (productInCart) {
+      toast.error("Product already in cart");
+      console.log("Product already in cart");
+    } else {
+      addToCart({ ...productDetails, qty: quantity });
+      toast.success("Product added to cart");
+    }
+  };
+  
 
   useEffect(() => {
     getProductDetails();
+    getProducts();
   }, []);
 
-  const handleAddToCart = () => {
-    addToCart({ ...productDetails, qty: quantity });
-  };
+  // const handleAddToCart = () => {
+  //   addToCart({ ...productDetails, qty: quantity });
+  // };
 
   const handleRemoveItem = () => {
     if (quantity > 1) {
@@ -94,11 +119,12 @@ function ProductPage() {
                   Favourite
                 </button>
                 <button className='bg-[#f54748] active:scale-90 transition duration-500 transform
-                  hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white'
-                  onClick={handleAddToCart}
-                >
-                  Add to Cart
-                </button>
+  hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white'
+  onClick={handleAddToCart}
+>
+  Add to Cart
+</button>
+
 
               </div>
             </div>

@@ -1,8 +1,8 @@
-body{
+body {
   font-family: "Poppins", sans-serif;
   background: linear-gradient(180deg,
-   rgba(245,71,71,0.216) 0%,
-   rgba(245,71,72,0) 100%
-   );
-   background-size: cover;
+    rgba(71, 125, 245, 0.216) 0%, /* Light blue shade */
+    rgba(71, 125, 245, 0) 100%   /* Transparent blue */
+  );
+  background-size: cover;
 }

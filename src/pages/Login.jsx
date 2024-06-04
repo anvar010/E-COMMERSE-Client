@@ -49,7 +49,7 @@ function Login() {
             <div className='h-screen pt-[16vh]'>
                 <form className='ease-in duration-300 w-[80%] sm:w-max shadow-sm backdrop-blur-md bg-white/80 lg:w-max mx-auto flex flex-col items-center rounded-md px-8 py-5 relative' onSubmit={handleOnsubmit}>
                     <NavLink to='/'>
-                        <img src={logo} alt="" className='logo mb-6 cursor-pointer text-center' />
+                        <img src={logo} alt="Logo" className='mb-6 cursor-pointer text-center w-24 h-24' />
                     </NavLink>
                     <div className='mb-4'>
                         <label htmlFor="email" className='block text-gray-700 text-sm mb-2'>
@@ -67,13 +67,13 @@ function Login() {
                                 type={showPassword ? 'text' : 'password'}
                                 name='password'
                                 placeholder='**********'
-                                className='shadow-sm bg-white  appearance-none border rounded w-full py-2 px-3 sm:w-[20rem] text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+                                className='shadow-sm bg-white appearance-none border rounded w-full py-2 px-3 sm:w-[20rem] text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
                             />
                             <div
-                                className='absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer'
+                                className='absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-gray-500'
                                 onClick={toggleShowPassword}
                             >
-                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
                             </div>
                         </div>
                     </div>

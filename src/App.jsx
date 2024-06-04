@@ -14,11 +14,14 @@ import Profile from './pages/Profile';
 import AddProduct from './pages/seller/AddProduct';
 import ViewCart from './pages/ViewCart';
 import Success from './pages/Success';
-import { useUserContext } from '../context/userContext'; // Adjusted import path
+import { useUserContext } from '../context/userContext'; 
 import axios from 'axios';
+import YourOrder from './pages/BuyNow';
+import ProductListByUser from './pages/MyProduct';
+import EditPage from './pages/EditPage';
 
 function App() {
-  const { user, setUser } = useUserContext(); // Use the user context
+  const { user, setUser } = useUserContext();
 
   useEffect(() => {
     const initializeUser = async () => {
@@ -40,7 +43,7 @@ function App() {
             setUser(res.data.data);
             console.log("User data set:", res.data.data);
             // const userId =  res.data.data.user._id;
-            
+
           } else {
             console.log("User data fetch failed, clearing localStorage");
             localStorage.clear();
@@ -68,6 +71,9 @@ function App() {
         <Route path='/products/:id' element={<ProtectedRoute><ProductPage /></ProtectedRoute>} />
         <Route path='/viewcart' element={<ProtectedRoute><ViewCart /></ProtectedRoute>} />
         <Route path='/success' element={<ProtectedRoute><Success /></ProtectedRoute>} />
+        <Route path='/buynow/:id' element={<ProtectedRoute><YourOrder /></ProtectedRoute>} />
+        <Route path='/productlist/:id' element={<ProtectedRoute><ProductListByUser /></ProtectedRoute>} />
+        <Route path='/editproduct/:id' element={<ProtectedRoute><EditPage /></ProtectedRoute>} />
       </Routes>
       <Footer />
     </>

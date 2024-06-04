@@ -17,4 +17,4 @@ const useProductContext = () => {
     return useContext(ProductContext)
 }
 
-export {ProductProvider,useProductContext}
+export {ProductProvider,useProductContext,ProductContext}

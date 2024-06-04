@@ -6,6 +6,10 @@ import './index.css'
 import { UserProvider } from '../context/userContext.jsx'
 import { ProductProvider } from '../context/productContext.jsx'
 import { CartProvider } from '../context/cartContext.jsx'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -17,6 +21,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </CartProvider>
     </ProductProvider>
     </UserProvider>
+    <ToastContainer />
     </BrowserRouter>
   </React.StrictMode>,
 )
