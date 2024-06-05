@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { useCartContext } from '../../context/cartContext';
 
 function BuyNow() {
-  const { cartItems,increaseItemQuantity, removeItem } = useCartContext();
-  const [shippingCost, setShippingCost] = useState(20); 
+  const { cartItems, increaseItemQuantity, removeItem } = useCartContext();
+  const [shippingCost] = useState(40);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('dbt'); 
 
-  // useEffect(() => {
-   
-  // }, []);
-
-  
   const getTotalPrice = () => {
     let totalPrice = 0;
     cartItems.forEach(item => {
@@ -21,14 +17,17 @@ function BuyNow() {
     return totalPrice.toFixed(2);
   };
 
+  const handlePaymentMethodChange = (method) => {
+    setSelectedPaymentMethod(method);
+  };
+
   return (
     <div className='pt-[16vh]'>
       <div className='py-3 px-10 sm:px-4 md:px-6 lg:px-6'>
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 pb-14 gap-8">
             <div className="flex flex-col lg:flex-row bg-gray-100 rounded-b-md p-6">
-             
-              <div className="flex-1">
+              <div className="flex-1 overflow-auto max-h-[60vh]">
                 {cartItems.map((product, index) => (
                   <div key={index} className="mb-4 flex items-center">
                     <img src={product.product.productImage} alt={product.product.name} className="w-20 h-20 mr-4" />
@@ -44,7 +43,6 @@ function BuyNow() {
                           <AiOutlinePlus />
                         </button>
                       </div>
-                      
                     </div>
                   </div>
                 ))}
@@ -71,6 +69,47 @@ function BuyNow() {
                       </tr>
                     </tbody>
                   </table>
+                  <div className="mt-6 flex flex-wrap">
+                    <h3 className="font-semibold mb-2 w-full">Select Payment Method:</h3>
+                    <label className="inline-flex items-center mb-4 mr-4">
+                      <input 
+                        type="radio" 
+                        name="paymentMethod" 
+                        value="dbt" 
+                        checked={selectedPaymentMethod === 'dbt'}
+                        onChange={() => handlePaymentMethodChange('dbt')}
+                        className="form-radio text-indigo-600" 
+                      />
+                      <span className="ml-2">Direct Bank Transfer</span>
+                    </label>
+                    <p className="text-sm text-gray-600">
+                      Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.
+                    </p>
+                    <label className="inline-flex items-center mb-4 mr-4">
+                      <input 
+                        type="radio" 
+                        name="paymentMethod" 
+                        value="cd" 
+                        checked={selectedPaymentMethod === 'cd'}
+                        onChange={() => handlePaymentMethodChange('cd')}
+                        disabled={getTotalPrice() > 20000} // Disable if total price is greater than $20000
+                        className="form-radio text-indigo-600" 
+                      />
+                      <span className="ml-2">Cash on Delivery</span>
+                    </label>
+                    <label className="inline-flex items-center mb-4">
+                      <input 
+                        type="radio" 
+                        name="paymentMethod" 
+                        value="paypal" 
+                        checked={selectedPaymentMethod === 'paypal'}
+                        onChange={() => handlePaymentMethodChange('paypal')}
+                        className="form-radio text-indigo-600" 
+                      />
+                      <span className="ml-2">Paypal</span>
+                      <img src="https://www.logolynx.com/images/logolynx/c3/c36093ca9fb6c250f74d319550acac4d.jpeg" alt="Paypal" className="ml-2 w-15 h-8" />
+                    </label>
+                  </div>
                   <Link to={'/success'}>
                     <button type="button" className="w-full shadow-sm text-white bg-red-500 py-2 rounded-full mt-4 hover:bg-red-700 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-[#52ad9c]">Place Order</button>
                   </Link>

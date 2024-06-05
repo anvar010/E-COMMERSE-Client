@@ -41,15 +41,15 @@ function Navbar() {
             <Link to="/"><img src={logo} alt="Logo" className='h-14 cursor-pointer' /></Link>
 
             <div className="lg:flex hidden gap-8 items-center">
-              <NavLink to="/" className='text-[#191919] text-xl font-medium hover:text-red-500'>Home</NavLink>
-              <a href= '#' className='text-[#191919] text-xl font-medium hover:text-red-500'>Today's Offer</a>
-              <a href="#" className='text-[#191919] text-xl font-medium hover:text-red-500'>Why Shopper</a>
-              <Link to="/products" className='text-[#191919] text-xl font-medium hover:text-red-500'>Our Products</Link>
+              <NavLink to="/" className='text-[#191919] text-xl font-medium hover:text-red-500 md:text-lg'>Home</NavLink>
+              <a href= '/offer-to-day' className='text-[#191919] text-xl font-medium hover:text-red-500 md:text-lg'>Today's Offer</a>
+              <a href="/wishlist" className='text-[#191919] text-xl font-medium hover:text-red-500 md:text-lg'>Wishlist</a>
+              <Link to="/products" className='text-[#191919] text-xl font-medium hover:text-red-500 md:text-lg'>Our Products</Link>
               {user?.type === 'seller' && (
-                <Link to="/addproduct" className='text-[#191919] text-xl font-medium hover:text-red-500'>Add Product</Link>
+                <Link to="/addproduct" className='text-[#191919] text-xl font-medium hover:text-red-500 md:text-lg'>Add Product</Link>
               )}
                {user?.type === 'seller' && (
-                <Link to={`/productlist/${user?._id}`} className='text-[#191919] text-xl font-medium hover:text-red-500'>My Products</Link>
+                <Link to={`/productlist/${user?._id}`} className='text-[#191919] text-xl font-medium hover:text-red-500 md:text-lg'>My Products</Link>
               )}
               {/* <a href="#" className='text-[#191919] text-xl font-medium hover:text-red-500'>Popular Products</a> */}
               <div className="dropdown dropdown-end">
@@ -76,7 +76,7 @@ function Navbar() {
               {user ? (
                 <div className="dropdown dropdown-end">
                   <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                    <div className="w-10 rounded-full">
+                    <div className="w-10 rounded-full hover:scale-105 transition-transform duration-300">
                       <img alt="User profile" src={user?.profileImage} />
                     </div>
                   </div>

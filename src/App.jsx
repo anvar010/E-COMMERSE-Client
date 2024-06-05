@@ -19,6 +19,8 @@ import axios from 'axios';
 import YourOrder from './pages/BuyNow';
 import ProductListByUser from './pages/MyProduct';
 import EditPage from './pages/EditPage';
+import SpecialOffers from './component/SpecialOffers';
+import ViewWishlist from './pages/Wishlist';
 
 function App() {
   const { user, setUser } = useUserContext();
@@ -74,6 +76,9 @@ function App() {
         <Route path='/buynow' element={<ProtectedRoute><YourOrder /></ProtectedRoute>} />
         <Route path='/productlist/:id' element={<ProtectedRoute><ProductListByUser /></ProtectedRoute>} />
         <Route path='/editproduct/:id' element={<ProtectedRoute><EditPage /></ProtectedRoute>} />
+        <Route path='/offer-to-day' element={<ProtectedRoute><SpecialOffers /></ProtectedRoute>} />
+        <Route path='/wishlist' element={<ProtectedRoute><ViewWishlist /></ProtectedRoute>} />
+
       </Routes>
       <Footer />
     </>

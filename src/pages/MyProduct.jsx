@@ -97,7 +97,7 @@ function ProductListByUser() {
                     <span className='font-medium'>({curElem.reviews.length})</span>
                   </div>
                 </div>
-                <Link to={`/editproduct/${curElem._id}`} className='bg-[#f54748] active:scale-90 transition duration-150 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white mt-auto'>
+                <Link to={`/editproduct/${curElem._id}`} className='bg-[#f54748] active:scale-90 transition duration-150 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white mt-auto md:text-sm lg:text-lg'>
   <button>Edit the Product</button>
 </Link>
 
