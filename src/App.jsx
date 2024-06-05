@@ -21,6 +21,7 @@ import ProductListByUser from './pages/MyProduct';
 import EditPage from './pages/EditPage';
 import SpecialOffers from './component/SpecialOffers';
 import ViewWishlist from './pages/Wishlist';
+import Buy from './pages/Buy';
 
 function App() {
   const { user, setUser } = useUserContext();
@@ -74,6 +75,8 @@ function App() {
         <Route path='/viewcart' element={<ProtectedRoute><ViewCart /></ProtectedRoute>} />
         <Route path='/success' element={<ProtectedRoute><Success /></ProtectedRoute>} />
         <Route path='/buynow' element={<ProtectedRoute><YourOrder /></ProtectedRoute>} />
+        <Route path='/buynow/:id' element={<ProtectedRoute><Buy /></ProtectedRoute>} />
+
         <Route path='/productlist/:id' element={<ProtectedRoute><ProductListByUser /></ProtectedRoute>} />
         <Route path='/editproduct/:id' element={<ProtectedRoute><EditPage /></ProtectedRoute>} />
         <Route path='/offer-to-day' element={<ProtectedRoute><SpecialOffers /></ProtectedRoute>} />

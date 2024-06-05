@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; 
 import { useCartContext } from '../../context/cartContext';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { useUserContext } from '../../context/UserContext';
@@ -8,6 +8,7 @@ function ViewCart() {
   const { cartItems, clearCart, removeItem, increaseItemQuantity, setQuantityToZero } = useCartContext();
   const shippingPrice = 40;
   const { user } = useUserContext();
+  const navigate = useNavigate(); 
 
   const getTotalPrice = () => {
     const totalPrice = cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0);
@@ -16,6 +17,18 @@ function ViewCart() {
 
   const handleRemoveSingleItem = (product) => {
     setQuantityToZero(product);
+  };
+  
+  const handleCheckout = () => {
+    if (cartItems.length === 1) {
+      const productId = cartItems[0].product._id; 
+      navigate(`/buynow/${productId}`); // Redirect to /buynow/productid if only one item in cart
+    } else {
+      navigate({
+        pathname: '/buynow',
+        state: { cartItems }
+      });
+    }
   };
 
   return (
@@ -79,12 +92,9 @@ function ViewCart() {
               </div>
               <div className='flex space-x-4'>
                 {user && cartItems.length > 0 && (
-                  <div className='btn text-right justify-end ml-auto text-white hover:bg-red-600 hover:border-red-600 btn-sm bg-red-500'>
-                    <Link to={{
-                      pathname: '/buynow',
-                      state: { cartItems }
-                    }}>Check out</Link>
-                  </div>
+                  <button className='btn text-right justify-end ml-auto text-white hover:bg-red-600 hover:border-red-600 btn-sm bg-red-500' onClick={handleCheckout}>
+                  Check out
+                  </button>
                 )}
                 <button className='btn text-white hover:bg-gray-600 hover:border-gray-600 btn-sm bg-gray-500' onClick={clearCart}>
                   Clear Cart
@@ -99,3 +109,4 @@ function ViewCart() {
 }
 
 export default ViewCart;
+``

@@ -13,11 +13,10 @@ function Register() {
     useEffect(() => {
         axios.get("http://localhost:8000/api/v1/user/types")
             .then(response => {
-                setOptions(response.data.options || []); // Ensure options is initialized even if response.data.options is undefined
+                setOptions(response.data.options || []); 
             })
             .catch(error => {
                 console.error('Error fetching options:', error);
-                // Handle the error, such as setting a default value for options or displaying an error message to the user
             });
     }, []);
     
