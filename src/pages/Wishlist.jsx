@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlistContext } from '../../context/wishlistContext';
-import axios from 'axios';
 
 function ViewWishlist() {
-  const { wishlist, handleRemoveFromWishlist } = useWishlistContext();
+  const { wishlist, handleRemoveSingleItemFromWishlist } = useWishlistContext();
 
   return (
     <div className='pt-14'>
@@ -35,7 +34,7 @@ function ViewWishlist() {
                   <span className='font-bold text-sm'>${product.product.price}</span>
                 </div>
                 <div className="col-span-2 text-center">
-                  <button className='text-red-500 hover:text-red-700 cursor-pointer' onClick={() => handleRemoveFromWishlist(product._id)}>Remove</button>
+                  <button className='text-red-500 hover:text-red-700 cursor-pointer' onClick={() => handleRemoveSingleItemFromWishlist(product.product._id)}>Remove</button>
                 </div>
               </div>
             ))}

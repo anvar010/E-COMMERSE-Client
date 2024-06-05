@@ -1,17 +1,18 @@
-// context/wishlistContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useUserContext } from './UserContext';
 
 const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
+  const { user } = useUserContext();
   const [wishlist, setWishlist] = useState([]);
 
   const getWishlist = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) return;
+      if (!token || !user) return;
 
       const response = await axios.get('http://localhost:8000/api/v1/user/get-wishlist', {
         headers: {
@@ -32,7 +33,7 @@ export const WishlistProvider = ({ children }) => {
   const handleAddToWishlist = async (productId) => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) return;
+      if (!token || !user) return;
 
       const response = await axios.post(
         'http://localhost:8000/api/v1/user/add-to-wishlist',
@@ -59,7 +60,7 @@ export const WishlistProvider = ({ children }) => {
   const handleRemoveFromWishlist = async (productId) => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) return;
+      if (!token || !user) return;
 
       const response = await axios.post(
         'http://localhost:8000/api/v1/user/remove-wishlist',
@@ -82,12 +83,43 @@ export const WishlistProvider = ({ children }) => {
       toast.error("Failed to remove product from wishlist");
     }
   };
+
+  const handleRemoveSingleItemFromWishlist = async (productId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token || !user) return;
+      
+      const response = await axios.delete(
+        `http://localhost:8000/api/v1/user/remove-wishlist/${user._id}/${productId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+    //   console.log('Response:', response.data);
+
+      if (response.data.success) {
+        toast.success("Product removed from wishlist");
+        setWishlist(prevWishlist => prevWishlist.filter(item => item.product._id !== productId));
+      } else {
+        toast.error(response.data.error);
+      }
+    } catch (error) {
+      console.error('Error removing product from wishlist:', error);
+      toast.error("Failed to remove product from wishlist");
+    }
+  };
+
   useEffect(() => {
-    getWishlist();
-  }, []);
+    if (user) {
+      getWishlist();
+    }
+  }, [user]);
 
   return (
-    <WishlistContext.Provider value={{ wishlist, handleAddToWishlist, handleRemoveFromWishlist }}>
+    <WishlistContext.Provider value={{ wishlist, handleAddToWishlist, handleRemoveFromWishlist, handleRemoveSingleItemFromWishlist }}>
       {children}
     </WishlistContext.Provider>
   );

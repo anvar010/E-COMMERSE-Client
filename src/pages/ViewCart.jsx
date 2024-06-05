@@ -27,14 +27,19 @@ function ViewCart() {
               <h1 className="font-semibold text-2xl">My Cart</h1>
               <h1 className="font-semibold text-2xl">{cartItems?.length || 0}</h1>
             </div>
-            <div className="mt-10 mb-5 grid grid-cols-12 gap-4">
-              <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-4">Product details</h3>
-              <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Category</h3>
-              <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Price</h3>
-              <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Total Price</h3>
-              <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Actions</h3>
-            </div>
-            {cartItems?.map((product) => (
+            {cartItems?.length === 0 && (
+              <div className="text-center text-gray-600 mt-8">Your cart is empty.</div>
+            )}
+            {cartItems?.length > 0 && (
+              <div className="mt-10 mb-5 grid grid-cols-12 gap-4">
+                <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-4">Product details</h3>
+                <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Category</h3>
+                <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Price</h3>
+                <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Total Price</h3>
+                <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Actions</h3>
+              </div>
+            )}
+            {cartItems?.length > 0 && cartItems.map((product) => (
               <div key={product._id} className='grid grid-cols-12 gap-4 items-center hover:bg-gray-100 -mx-8 px-6 py-5'>
                 <Link to={`/products/${product.product._id}`} className="col-span-1">
                   <img src={product.product.productImage} alt="" className="h-20 w-20" />
