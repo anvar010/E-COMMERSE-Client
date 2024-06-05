@@ -1,45 +1,24 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { useCartContext } from '../../context/cartContext';
-import { Link } from 'react-router-dom/dist';
 
 function BuyNow() {
-  const params = useParams();
-  const [productDetails, setProductDetails] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCartContext();
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('dbt');
-  const userId = params.userId; 
-  const shippingCost = 20; 
+  const { cartItems,increaseItemQuantity, removeItem } = useCartContext();
+  const [shippingCost, setShippingCost] = useState(20); 
 
-  useEffect(() => {
-    const getProductDetails = async () => {
-      try {
-        const res = await axios.get(`http://localhost:8000/api/v1/product/getProduct/${params.id}`);
-        if (res.data.success) {
-          setProductDetails(res.data.data.product);
-          console.log(res.data.data.product)
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  // useEffect(() => {
+   
+  // }, []);
 
-    getProductDetails();
-  }, [params.id]);
-
-  const handleAddToCart = () => {
-    if (productDetails) {
-      addToCart({ ...productDetails, qty: quantity, userId: userId }); 
-    }
-  };
-
-  const handleRemoveItem = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-    }
+  
+  const getTotalPrice = () => {
+    let totalPrice = 0;
+    cartItems.forEach(item => {
+      totalPrice += item.product.price * item.quantity;
+    });
+    totalPrice += shippingCost;
+    return totalPrice.toFixed(2);
   };
 
   return (
@@ -48,7 +27,28 @@ function BuyNow() {
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 pb-14 gap-8">
             <div className="flex flex-col lg:flex-row bg-gray-100 rounded-b-md p-6">
-              <img src={productDetails?.productImage} alt="" className='w-full h-[25rem] cursor-pointer' />
+             
+              <div className="flex-1">
+                {cartItems.map((product, index) => (
+                  <div key={index} className="mb-4 flex items-center">
+                    <img src={product.product.productImage} alt={product.product.name} className="w-20 h-20 mr-4" />
+                    <div>
+                      <h3 className="font-semibold text-lg">{product.product.name}</h3>
+                      <p>Price: ${product.product.price}</p>
+                      <div className="flex items-center">
+                        <button onClick={() => removeItem(product)} className="text-red-500 hover:text-red-700">
+                          <AiOutlineMinus />
+                        </button>
+                        <span className="mx-2">{product.quantity}</span>
+                        <button onClick={() => increaseItemQuantity(product)} className="text-green-500 hover:text-green-700">
+                          <AiOutlinePlus />
+                        </button>
+                      </div>
+                      
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="flex flex-col lg:flex-row bg-gray-100 rounded-b-md p-6">
               <div className="flex-1">
@@ -62,64 +62,17 @@ function BuyNow() {
                     </thead>
                     <tbody>
                       <tr>
-                        <td className="py-2 border-b border-gray-300">{productDetails?.name}</td>
-                        <td className="py-2 border-b border-gray-300 text-right text-[#52ad9c]">{productDetails?.price}</td>
-                      </tr>
-                      <tr>
                         <td className="py-2 border-b border-gray-300">Shipping</td>
-                        <td className="py-2 border-b border-gray-300 text-right text-[#52ad9c]">{shippingCost}</td>
+                        <td className="py-2 border-b border-gray-300 text-right text-[#52ad9c]">${shippingCost}</td>
                       </tr>
                       <tr>
-                        <td className="py-2">Subtotal</td>
-                        <td className="py-2 text-right text-[#52ad9c]">{(productDetails?.price ?? 0) + shippingCost}</td>
+                        <td className="py-2">Total</td>
+                        <td className="py-2 text-right text-[#52ad9c]">${getTotalPrice()}</td>
                       </tr>
                     </tbody>
                   </table>
-                  <div className="mt-6">
-                    <label className="inline-flex items-center mb-4">
-                      <input 
-                        type="radio" 
-                        name="paymentMethod" 
-                        value="dbt" 
-                        checked={selectedPaymentMethod === 'dbt'}
-                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                        className="form-radio text-indigo-600" 
-                      />
-                      <span className="ml-2">Direct Bank Transfer</span>
-                    </label>
-                    <p className="mt-1 text-sm text-gray-600">
-                      Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.
-                    </p>
-                  </div>
-                  <div className="mt-4">
-                    <label className="inline-flex items-center mb-4">
-                      <input 
-                        type="radio" 
-                        name="paymentMethod" 
-                        value="cd" 
-                        checked={selectedPaymentMethod === 'cd'}
-                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                        className="form-radio text-indigo-600" 
-                      />
-                      <span className="ml-2">Cash on Delivery</span>
-                    </label>
-                  </div>
-                  <div className="mt-4">
-                    <label className="inline-flex items-center mb-4">
-                      <input 
-                        type="radio" 
-                        name="paymentMethod" 
-                        value="paypal" 
-                        checked={selectedPaymentMethod === 'paypal'}
-                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                        className="form-radio text-indigo-600" 
-                      />
-                      <span className="ml-2">Paypal</span>
-                      <img src="https://www.logolynx.com/images/logolynx/c3/c36093ca9fb6c250f74d319550acac4d.jpeg" alt="Paypal" className="ml-2 w-15 h-8" />
-                    </label>
-                  </div>
                   <Link to={'/success'}>
-                  <button type="button" className="w-full shadow-sm text-white bg-red-500 py-2 rounded-full mt-4 hover:bg-red-700 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-[#52ad9c]">Place Order</button>
+                    <button type="button" className="w-full shadow-sm text-white bg-red-500 py-2 rounded-full mt-4 hover:bg-red-700 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-[#52ad9c]">Place Order</button>
                   </Link>
                 </div>
               </div>

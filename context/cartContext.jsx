@@ -186,7 +186,7 @@ const CartProvider = ({ children }) => {
                 ]
             });
         } else {
-            // If cart has less than two products, clear it directly without confirmation
+            
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.delete('http://localhost:8000/api/v1/cart/clear-cart', {

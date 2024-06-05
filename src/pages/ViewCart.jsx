@@ -2,10 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useCartContext } from '../../context/cartContext';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
+import { useUserContext } from '../../context/UserContext';
 
 function ViewCart() {
   const { cartItems, clearCart, removeItem, increaseItemQuantity, setQuantityToZero } = useCartContext();
   const shippingPrice = 40;
+  const { user } = useUserContext();
 
   const getTotalPrice = () => {
     const totalPrice = cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0);
@@ -25,19 +27,19 @@ function ViewCart() {
               <h1 className="font-semibold text-2xl">My Cart</h1>
               <h1 className="font-semibold text-2xl">{cartItems?.length || 0}</h1>
             </div>
-            <div className="mt-10 flex mb-5">
-              <h3 className="font-semibold text-gray-900 text-xs uppercase w-2/5">Product details</h3>
-              <h3 className="font-semibold text-gray-900 text-xs uppercase w-1/5 text-center">Category</h3>
-              <h3 className="font-semibold text-gray-900 text-xs uppercase w-1/5 text-center">Price</h3>
-              <h3 className="font-semibold text-gray-900 text-xs uppercase w-1/5 text-center">Total Price</h3>
-              <h3 className="font-semibold text-gray-900 text-xs uppercase w-1/5 text-center">Actions</h3>
+            <div className="mt-10 mb-5 grid grid-cols-12 gap-4">
+              <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-4">Product details</h3>
+              <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Category</h3>
+              <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Price</h3>
+              <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Total Price</h3>
+              <h3 className="font-semibold text-gray-900 text-xs uppercase col-span-2 text-center">Actions</h3>
             </div>
             {cartItems?.map((product) => (
-              <div key={product._id} className='flex items-center hover:bg-gray-100 -mx-8 px-6 py-5'>
-                <Link to={`/products/${product.product._id}`} className="w-20 flex-shrink-0">
-                  <img src={product.product.productImage} alt="" className="h-20" />
+              <div key={product._id} className='grid grid-cols-12 gap-4 items-center hover:bg-gray-100 -mx-8 px-6 py-5'>
+                <Link to={`/products/${product.product._id}`} className="col-span-1">
+                  <img src={product.product.productImage} alt="" className="h-20 w-20" />
                 </Link>
-                <div className="flex flex-col justify-between ml-4 flex-grow">
+                <div className="col-span-3 flex flex-col justify-between ml-4">
                   <span className='font-bold text-sm'>{product.product.name}</span>
                   <span className='flex items-center space-x-4 mt-2'>
                     <div className='shadow-sm text-white bg-red-500 hover:bg-red-700 cursor-pointer p-2 rounded-full' onClick={() => removeItem(product)}>
@@ -49,16 +51,16 @@ function ViewCart() {
                     </div>
                   </span>
                 </div>
-                <div className="w-1/5 text-center">
+                <div className="col-span-2 text-center">
                   <span className='font-bold text-sm'>{product.product.category}</span>
                 </div>
-                <div className="w-1/5 text-center">
+                <div className="col-span-2 text-center">
                   <span className='font-bold text-sm'>${product.product.price} x {product.quantity}</span>
                 </div>
-                <div className="w-1/5 text-center">
+                <div className="col-span-2 text-center">
                   <span className="font-bold text-sm">${(product.quantity * product.product.price).toFixed(2)}</span>
                 </div>
-                <div className="w-1/5 text-center">
+                <div className="col-span-2 text-center">
                   <button className='text-red-500 hover:text-red-700 cursor-pointer' onClick={() => handleRemoveSingleItem(product)}>Remove</button>
                 </div>
               </div>
@@ -71,9 +73,14 @@ function ViewCart() {
                 Total Price: ${getTotalPrice().toFixed(2)}
               </div>
               <div className='flex space-x-4'>
-                <div className='btn text-right justify-end ml-auto text-white hover:bg-red-600 hover:border-red-600 btn-sm bg-red-500'>
-                  <Link to="/success">Check out</Link>
-                </div>
+                {user && cartItems.length > 0 && (
+                  <div className='btn text-right justify-end ml-auto text-white hover:bg-red-600 hover:border-red-600 btn-sm bg-red-500'>
+                    <Link to={{
+                      pathname: '/buynow',
+                      state: { cartItems }
+                    }}>Check out</Link>
+                  </div>
+                )}
                 <button className='btn text-white hover:bg-gray-600 hover:border-gray-600 btn-sm bg-gray-500' onClick={clearCart}>
                   Clear Cart
                 </button>

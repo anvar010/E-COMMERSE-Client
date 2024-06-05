@@ -38,10 +38,10 @@ function App() {
               }
             }
           );
-          console.log("API response:", res.data);
+          // console.log("API response:", res.data);
           if (res.data.success) {
             setUser(res.data.data);
-            console.log("User data set:", res.data.data);
+            // console.log("User data set:", res.data.data);
             // const userId =  res.data.data.user._id;
 
           } else {
@@ -71,7 +71,7 @@ function App() {
         <Route path='/products/:id' element={<ProtectedRoute><ProductPage /></ProtectedRoute>} />
         <Route path='/viewcart' element={<ProtectedRoute><ViewCart /></ProtectedRoute>} />
         <Route path='/success' element={<ProtectedRoute><Success /></ProtectedRoute>} />
-        <Route path='/buynow/:id' element={<ProtectedRoute><YourOrder /></ProtectedRoute>} />
+        <Route path='/buynow' element={<ProtectedRoute><YourOrder /></ProtectedRoute>} />
         <Route path='/productlist/:id' element={<ProtectedRoute><ProductListByUser /></ProtectedRoute>} />
         <Route path='/editproduct/:id' element={<ProtectedRoute><EditPage /></ProtectedRoute>} />
       </Routes>

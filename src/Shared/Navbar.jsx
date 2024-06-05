@@ -11,9 +11,9 @@ function Navbar() {
   const [profileDropdown, setProfileDropdown] = useState(false);
   const navigate = useNavigate();
   const { user, isLoading } = useUserContext(); 
-  console.log('User Logged:', user);
+  // console.log('User Logged:', user);
   const { cartItems } = useCartContext();
-  console.log('Cart Items Logged:', cartItems); 
+  // console.log('Cart Items Logged:', cartItems); 
 
   const handleNav = () => {
     setNav(!nav);
