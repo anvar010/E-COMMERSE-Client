@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import PageNavigation from '../component/PageNavigation';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { useCartContext } from '../../context/cartContext';
@@ -14,6 +14,7 @@ function ProductPage() {
   const [mainImage, setMainImage] = useState('');
   const { cartItems, addToCart, removeItem } = useCartContext();
   const { wishlist, handleAddToWishlist: addToWishlist, handleRemoveFromWishlist } = useWishlistContext(); 
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const getProductDetails = async () => {
     try {
@@ -47,6 +48,10 @@ function ProductPage() {
       addToWishlist(productDetails._id); 
       // toast.success("Product added to wishlist");
     }
+  };
+
+  const handleBuyNow = () => {
+    navigate(`/buynow/${params.id}`); // Redirect to /buynow/productId using navigate
   };
 
   useEffect(() => {
@@ -100,7 +105,7 @@ function ProductPage() {
                     Add to Cart
                   </button>
                 )}
-                <button className='bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white'>
+                <button className='bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white' onClick={handleBuyNow}>
                   Buy Now
                 </button>
               </div>
