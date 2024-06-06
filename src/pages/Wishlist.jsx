@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlistContext } from '../../context/wishlistContext';
 
@@ -22,7 +22,7 @@ function ViewWishlist() {
             {wishlist.map((product) => (
               <div key={product.product._id} className='grid grid-cols-12 gap-4 items-center hover:bg-gray-100 -mx-8 px-6 py-5'>
                 <Link to={`/products/${product.product._id}`} className="col-span-1">
-                  <img src={product.product.productImage} alt="" className="h-20 w-20" />
+                  <img src={product.product.productImages[0]} alt="" className="h-20 w-20" /> 
                 </Link>
                 <div className="col-span-3 flex flex-col justify-between ml-4">
                   <span className='font-bold text-sm'>{product.product.name}</span>

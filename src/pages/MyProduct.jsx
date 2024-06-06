@@ -78,7 +78,7 @@ function ProductListByUser() {
               <div className="food-card bg-red-500/10 rounded-xl flex flex-col cursor-pointer items-center p-5" key={curElem._id}>
                 <div className="relative mb-3">
                   <Link to={`/products/${curElem._id}`}>
-                    <img src={curElem.productImage} alt={curElem.name} className="w-full object-cover rounded-md hover:scale-105 transition-transform duration-300"/>
+                    <img src={curElem.productImages[0]} alt={curElem.name} className="w-full object-cover rounded-md hover:scale-105 transition-transform duration-300"/>
                   </Link>
                   <div className='absolute top-2 left-2'>
                   

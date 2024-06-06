@@ -9,16 +9,19 @@ import { toast } from 'react-toastify';
 
 function ProductPage() {
   const params = useParams();
-  const [value, setValue] = useState('all');
-  const [productDetails, setProductDetails] = useState([]);
+  const [productDetails, setProductDetails] = useState({});
   const [quantity, setQuantity] = useState(1);
+  const [mainImage, setMainImage] = useState('');
   const { cartItems, addToCart, removeItem } = useCartContext();
   const { wishlist, handleAddToWishlist: addToWishlist, handleRemoveFromWishlist } = useWishlistContext(); 
+
   const getProductDetails = async () => {
     try {
       const res = await axios.get(`http://localhost:8000/api/v1/product/getProduct/${params.id}`);
       if (res.data.success) {
-        setProductDetails(res.data.data.product);
+        const product = res.data.data.product;
+        setProductDetails(product);
+        setMainImage(product.productImages[0]);
       }
     } catch (error) {
       console.log(error);
@@ -57,22 +60,35 @@ function ProductPage() {
           <PageNavigation title={productDetails?.name} />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className='bg-red-200/[.3] border rounded-md mb-5 p-4'>
-              <img src={productDetails?.productImage} alt="" className='w-full h-[25rem] cursor-pointer' />
+            <div className='flex'>
+              <div className='flex flex-col items-start'>
+                {productDetails?.productImages?.map((image, index) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt={`Thumbnail ${index}`}
+                    className='w-16 h-16 object-cover cursor-pointer mb-2'
+                    onClick={() => setMainImage(image)}
+                  />
+                ))}
+              </div>
+              <div className='bg-red-200/[.3] border rounded-md mb-5 p-4 ml-4'>
+                <img src={mainImage} alt="" className='w-full h-[25rem] cursor-pointer object-cover' />
+              </div>
             </div>
 
-            <div className='bg-red-200/[.3] border rounded mb-5 p-8 text-black' >
+            <div className='bg-red-200/[.3] border rounded mb-5 p-8 text-black'>
               <div className='text-2xl mb-4 font-bold text-[#f54748]'>
                 {productDetails?.name}
               </div>
               <div className='text-2xl mb-4 font-bold text-yellow-500'>
-                Price: {productDetails?.price}
+                Price: ${productDetails?.price}
               </div>
               <div className="text-lg text-justify text-black mb-6">
                 {productDetails?.description}
               </div>
               <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:gap-4 sm:mx-auto">
-                <button className='bg-white active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-[#f54748] ' onClick={handleToggleWishlist}>
+                <button className='bg-white active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-[#f54748]' onClick={handleToggleWishlist}>
                   {wishlist.some(item => item.product._id === productDetails._id) ? "Favourited" : "Favourite"}
                 </button>
                 {cartItems.some(item => item.product._id === productDetails._id) ? (
@@ -84,8 +100,7 @@ function ProductPage() {
                     Add to Cart
                   </button>
                 )}
-                
-                 <button className='bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white'>
+                <button className='bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white'>
                   Buy Now
                 </button>
               </div>

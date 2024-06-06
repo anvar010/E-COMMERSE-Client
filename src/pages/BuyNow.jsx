@@ -30,7 +30,7 @@ function BuyNow() {
               <div className="flex-1 overflow-auto max-h-[60vh]">
                 {cartItems.map((product, index) => (
                   <div key={index} className="mb-4 flex items-center">
-                    <img src={product.product.productImage} alt={product.product.name} className="w-20 h-20 mr-4" />
+                    <img src={product.product.productImages[0]} alt={product.product.name} className="w-20 h-20 mr-4" />
                     <div>
                       <h3 className="font-semibold text-lg">{product.product.name}</h3>
                       <p>Price: ${product.product.price}</p>

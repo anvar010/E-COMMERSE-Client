@@ -6,27 +6,34 @@ import axios from "axios";
 import logo from "../../assets/logo.png";
 
 function AddProduct() {
-  const [image, setImage] = useState({});
+  const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
 
   const handleImage = async (e) => {
-    const file = e.target.files[0];
-    let formData = new FormData();
-    formData.append('image', file);
+    const files = Array.from(e.target.files);
+    const uploadedImages = [];
+
     setUploading(true);
-    try {
-      const { data } = await axios.post("http://localhost:8000/api/v1/all/upload-image", formData);
-      setUploading(false);
-      setImage({
-        url: data.url,
-        public_id: data.public_id
-      });
-      toast.success("Successfully uploaded");
-    } catch (error) {
-      console.error(error);
-      setUploading(false);
-      toast.error("Failed to upload image");
+
+    for (const file of files) {
+      let formData = new FormData();
+      formData.append('image', file);
+      
+      try {
+        const { data } = await axios.post("http://localhost:8000/api/v1/all/upload-image", formData);
+        uploadedImages.push({
+          url: data.url,
+          public_id: data.public_id
+        });
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to upload image");
+      }
     }
+
+    setUploading(false);
+    setImages([...images, ...uploadedImages]);
+     toast.success("Successfully uploaded");
   };
 
   const handleSubmit = async (e) => {
@@ -38,22 +45,20 @@ function AddProduct() {
     const stock = form.stock.value;
     const location = form.location.value;
     const description = form.description.value;
-    const productImage = image?.url;
-  
-   
-    if (!name || !price || !category || !stock || !location || !description || !productImage) {
-      toast.error("Please fill in all fields and upload an image.");
+    const productImages = images.map(image => image.url);
+
+    if (!name || !price || !category || !stock || !location || !description || !productImages.length) {
+      toast.error("Please fill in all fields and upload images.");
       return;
     }
-  
+
     if (category === "default") {
       toast.error("Please select a category.");
       return;
     }
-  
-   
-    const productData = { name, price, category, stock, location, description, productImage };
-  
+
+    const productData = { name, price, category, stock, location, description, productImages };
+
     try {
       const res = await axios.post("http://localhost:8000/api/v1/product/addproduct", productData, {
         headers: {
@@ -63,7 +68,7 @@ function AddProduct() {
       if (res.data.success) {
         toast.success(res.data.message);
         form.reset();
-        setImage({});
+        setImages([]);
       } else {
         toast.error(res.data.message);
       }
@@ -72,8 +77,6 @@ function AddProduct() {
       toast.error("Failed to add product");
     }
   };
-  
-  
 
   return (
     <div className='addproduct'>
@@ -84,7 +87,7 @@ function AddProduct() {
           </NavLink>
           <div className="grid grid-cols-2 sm:grid-cols-2 items-center gap-4">
             <input type="text" name='name' placeholder='Enter product name' className='shadow-sm bg-white appearance-none border rounded w-full py-3 px-3  text-gray-700 leading-tight focus:outline-none focus:shadow-outline' />
-            <input type="file" name='myFile' className="file-input file-input-bordered bg-red-500 text-white file-input-md w-full" onChange={handleImage} />
+            <input type="file" name='myFile' multiple className="file-input file-input-bordered bg-red-500 text-white file-input-md w-full" onChange={handleImage} />
             <input type="number" name='price' placeholder='Enter price' className='shadow-sm bg-white appearance-none border rounded w-full py-3 px-3  text-gray-700 leading-tight focus:outline-none focus:shadow-outline' />
             <select className="select bg-red-500 text-white select-md w-full max-w-xs" name='category' defaultValue="default">
               <option value="default" disabled>Category</option>

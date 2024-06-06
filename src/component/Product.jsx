@@ -1,21 +1,43 @@
 import React from 'react';
-import { FaHeart, FaStar } from 'react-icons/fa';
+import { FaStar } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useWishlistContext } from '../../context/wishlistContext'; 
+import heart from '../assets/favourite.png'; 
+import filledHeart from '../assets/hearth.png'; 
 
 function Product({ curElem }) {
+  const { wishlist, handleAddToWishlist, handleRemoveFromWishlist } = useWishlistContext();
+
+  const inWishlist = wishlist.some(item => item.product._id === curElem._id);
+
+  const handleToggleWishlist = () => {
+    if (inWishlist) {
+      handleRemoveFromWishlist(curElem._id);
+    } else {
+      handleAddToWishlist(curElem._id);
+    }
+  };
+
   return (
     <div className="food-card bg-red-500/10 rounded-xl flex flex-col items-center p-5 cursor-pointer">
       <div className="relative mb-3 w-full">
         <Link to={`/products/${curElem?._id}`}>
           <img 
-            src={curElem?.productImage} 
-            alt="" 
+            src={curElem?.productImages[0]} 
+            alt={curElem.name || 'Product Image'} 
             className="w-full object-cover rounded-md hover:scale-105 transition-transform duration-300" 
           />
         </Link>
         <div className='absolute top-2 left-2'>
-          <button className='shadow-sm text-white bg-red-500 hover:bg-red-700 cursor-pointer p-5 rounded-full relative'>
-            <FaHeart className='absolute text-xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' />
+          <button 
+            className='shadow-sm hover:bg-red-700 p-5 rounded-full relative' 
+            onClick={handleToggleWishlist}
+          >
+            <img
+              src={inWishlist ? filledHeart : heart}
+              alt={inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+              className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+            />
           </button>
         </div>
         <div className='absolute bottom-2 right-2'>

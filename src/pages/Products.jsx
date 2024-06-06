@@ -5,10 +5,10 @@ import { FaStar } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useCartContext } from '../../context/cartContext';
 import { useUserContext } from '../../context/userContext';
-import { useWishlistContext } from '../../context/wishlistContext'; 
+import { useWishlistContext } from '../../context/wishlistContext';
 import { toast } from 'react-toastify';
-import heart from '../assets/favourite.png'; 
-import filledHeart from '../assets/hearth.png'; 
+import heart from '../assets/favourite.png';
+import filledHeart from '../assets/hearth.png';
 
 function Products() {
   const { product, setProduct } = useProductContext();
@@ -16,7 +16,7 @@ function Products() {
   const [value, setValue] = useState('all');
   const { cartItems, addToCart } = useCartContext();
   const { user } = useUserContext();
-  const { wishlist, handleAddToWishlist, handleRemoveFromWishlist } = useWishlistContext(); // Destructure functions from wishlist context
+  const { wishlist, handleAddToWishlist, handleRemoveFromWishlist } = useWishlistContext();
 
   const category = [
     { id: 0, name: 'All', value: 'all' },
@@ -91,11 +91,13 @@ function Products() {
           <div className="grid py-6 gap-8 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1">
             {product?.map((curElem) => {
               const inWishlist = wishlist.some(item => item.product._id === curElem._id);
+              const productImage = curElem?.productImages && curElem.productImages.length > 0 ? curElem.productImages[0] : ''; 
+
               return (
                 <div className="food-card bg-red-500/10 rounded-xl flex flex-col cursor-pointer items-center p-5" key={curElem._id}>
                   <div className="relative mb-3">
                     <Link to={`/products/${curElem?._id}`}>
-                      <img src={curElem?.productImage} alt="" className="w-full object-cover rounded-md hover:scale-105 transition-transform duration-300"/>
+                      <img src={productImage} alt={curElem.name || 'Product Image'} className="w-full object-cover rounded-md hover:scale-105 transition-transform duration-300" />
                     </Link>
                     <div className='absolute top-2 left-2'>
                       <button

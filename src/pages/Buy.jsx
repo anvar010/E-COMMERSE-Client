@@ -9,10 +9,10 @@ function Buy() {
   const params = useParams();
   const [productDetails, setProductDetails] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const { addToCart,cartItems } = useCartContext();
+  const { addToCart, cartItems } = useCartContext();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('dbt');
-  const userId = params.userId; 
-  const shippingCost = 20; 
+  const userId = params.userId;
+  const shippingCost = 20;
   const total = (productDetails?.price ?? 0) * quantity + shippingCost;
 
   useEffect(() => {
@@ -24,7 +24,6 @@ function Buy() {
           // Check if product is coming from cart
           const cartProduct = cartItems.find(item => item.product._id === product._id);
           if (cartProduct) {
-            
             setQuantity(cartProduct.quantity);
           }
           setProductDetails(product);
@@ -33,14 +32,14 @@ function Buy() {
         console.log(error);
       }
     };
-  
+
     getProductDetails();
   }, [params.id, cartItems]);
-  
+
 
   const handleAddToCart = () => {
     if (productDetails) {
-      addToCart({ ...productDetails, qty: quantity, userId: userId }); 
+      addToCart({ ...productDetails, qty: quantity, userId: userId });
     }
   };
 
@@ -60,15 +59,17 @@ function Buy() {
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 pb-14 gap-8">
             <div className="flex flex-col lg:flex-row bg-gray-100 rounded-b-md p-6 relative">
-              <img src={productDetails?.productImage} alt="" className='w-full h-[25rem] cursor-pointer' />
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 flex items-center">
-                <button onClick={handleRemoveItem} className="text-red-500 hover:text-red-700 text-2xl">
-                  <AiOutlineMinus />
-                </button>
-                <span className="mx-4 text-2xl">{quantity}</span>
-                <button onClick={handleIncreaseQuantity} className="text-green-500 hover:text-green-700 text-2xl">
-                  <AiOutlinePlus />
-                </button>
+              <div className="w-full relative">
+                <img src={productDetails?.productImages[0]} alt="" className='w-full h-[25rem] cursor-pointer' />
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 flex items-center">
+                  <button onClick={handleRemoveItem} className="text-red-500 hover:text-red-700 text-2xl">
+                    <AiOutlineMinus />
+                  </button>
+                  <span className="mx-4 text-2xl">{quantity}</span>
+                  <button onClick={handleIncreaseQuantity} className="text-green-500 hover:text-green-700 text-2xl">
+                    <AiOutlinePlus />
+                  </button>
+                </div>
               </div>
             </div>
             <div className="flex flex-col lg:flex-row bg-gray-100 rounded-b-md p-6">
@@ -98,13 +99,13 @@ function Buy() {
                   </table>
                   <div className="mt-6">
                     <label className="inline-flex items-center mb-4">
-                      <input 
-                        type="radio" 
-                        name="paymentMethod" 
-                        value="dbt" 
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="dbt"
                         checked={selectedPaymentMethod === 'dbt'}
                         onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                        className="form-radio text-indigo-600" 
+                        className="form-radio text-indigo-600"
                       />
                       <span className="ml-2">Direct Bank Transfer</span>
                     </label>
@@ -114,13 +115,13 @@ function Buy() {
                   </div>
                   <div className="mt-4">
                     <label className="inline-flex items-center mb-4">
-                      <input 
-                        type="radio" 
-                        name="paymentMethod" 
-                        value="cd" 
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="cd"
                         checked={selectedPaymentMethod === 'cd'}
                         onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                        className="form-radio text-indigo-600" 
+                        className="form-radio text-indigo-600"
                         disabled={total > 20000}
                       />
                       <span className="ml-2">Cash on Delivery</span>
@@ -128,13 +129,13 @@ function Buy() {
                   </div>
                   <div className="mt-4">
                     <label className="inline-flex items-center mb-4">
-                      <input 
-                        type="radio" 
-                        name="paymentMethod" 
-                        value="paypal" 
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="paypal"
                         checked={selectedPaymentMethod === 'paypal'}
                         onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                        className="form-radio text-indigo-600" 
+                        className="form-radio text-indigo-600"
                       />
                       <span className="ml-2">Paypal</span>
                       <img src="https://www.logolynx.com/images/logolynx/c3/c36093ca9fb6c250f74d319550acac4d.jpeg" alt="Paypal" className="ml-2 w-15 h-8" />
