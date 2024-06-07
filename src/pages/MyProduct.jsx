@@ -25,6 +25,18 @@ function ProductListByUser() {
   const handleBtn = (btn) => {
     setActive(btn.id);
     setValue(btn.value);
+    getProductsByCategory(btn.value); // Fetch products by category when a category button is clicked
+  };
+
+  const getProductsByCategory = async (categoryValue) => {
+    try {
+      const res = await axios.get(`http://localhost:8000/api/v1/product/getAllProduct?category=${categoryValue}`);
+      if (res.data.success) {
+        setProduct(res.data.data.product);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getProducts = async () => {
@@ -50,7 +62,7 @@ function ProductListByUser() {
     if (user) {
       getProducts();
     }
-  }, [user, value]);
+  }, [user]);
 
   return (
     <div className='pt-[16vh]'>

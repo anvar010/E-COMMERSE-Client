@@ -31,7 +31,7 @@ function SpecialOffers() {
         </div>
         <div className="grid py-6  gap-8 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1">
         {
-            specialproduct?.map(curElem => <Product key={curElem.id} curElem={curElem}/>)
+            specialproduct?.map(curElem => <Product key={curElem._id} curElem={curElem}/>)
            }
           
         </div>

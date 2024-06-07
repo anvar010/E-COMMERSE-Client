@@ -92,6 +92,7 @@ function Products() {
             {product?.map((curElem) => {
               const inWishlist = wishlist.some(item => item.product._id === curElem._id);
               const productImage = curElem?.productImages && curElem.productImages.length > 0 ? curElem.productImages[0] : ''; 
+              const isOwner = user && curElem.userId === user._id; // Check if user is not null and is the owner of the product
 
               return (
                 <div className="food-card bg-red-500/10 rounded-xl flex flex-col cursor-pointer items-center p-5" key={curElem._id}>
@@ -100,16 +101,29 @@ function Products() {
                       <img src={productImage} alt={curElem.name || 'Product Image'} className="w-full object-cover rounded-md hover:scale-105 transition-transform duration-300" />
                     </Link>
                     <div className='absolute top-2 left-2'>
-                      <button
-                        className={`shadow-sm hover:bg-red-700 p-5 rounded-full relative`}
-                        onClick={() => handleToggleWishlist(curElem._id)}
-                      >
-                        <img
-                          src={inWishlist ? filledHeart : heart}
-                          alt={inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
-                          className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
-                        />
-                      </button>
+                      {isOwner ? (
+                        <button
+                          className='shadow-sm p-5 rounded-full relative bg-gray-300 cursor-not-allowed'
+                          disabled
+                        >
+                          <img
+                            src={heart}
+                            alt='Cannot add to wishlist'
+                            className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+                          />
+                        </button>
+                      ) : (
+                        <button
+                          className={`shadow-sm hover:bg-red-700 p-5 rounded-full relative`}
+                          onClick={() => handleToggleWishlist(curElem._id)}
+                        >
+                          <img
+                            src={inWishlist ? filledHeart : heart}
+                            alt={inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                            className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+                          />
+                        </button>
+                      )}
                     </div>
                     <div className='absolute bottom-2 right-2'>
                       <button className='shadow-sm bottom-4 border-white text-white bg-[#fdc55e] cursor-pointer p-3 h-14 w-14 text-xl font-bold rounded-full relative'>
@@ -125,7 +139,14 @@ function Products() {
                       <span className='font-medium'>({curElem?.reviews?.length})</span>
                     </div>
                   </div>
-                  {cartItems.some(item => item.product._id === curElem._id) ? (
+                  {isOwner ? (
+                    <button
+                      className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-2 text-xl font-medium text-white mt-auto'
+                      disabled
+                    >
+                      Cannot buy your own product
+                    </button>
+                  ) : cartItems.some(item => item.product._id === curElem._id) ? (
                     <button
                       className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-2 text-xl font-medium text-white mt-auto'
                     >

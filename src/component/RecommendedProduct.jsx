@@ -32,7 +32,7 @@ function RecommendedProduct() {
             </div>
             <div className="grid py-6  gap-8 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1">
            {
-            ratedproduct?.map(curElem => <Product key={curElem.id} curElem={curElem}/>)
+            ratedproduct?.map(curElem => <Product key={curElem._id} curElem={curElem}/>)
            }
         </div>
         </div>

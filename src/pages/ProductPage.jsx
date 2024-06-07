@@ -5,6 +5,7 @@ import PageNavigation from '../component/PageNavigation';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { useCartContext } from '../../context/cartContext';
 import { useWishlistContext } from '../../context/wishlistContext'; // Import the wishlist context
+import { useUserContext } from '../../context/userContext'; // Import the user context
 import { toast } from 'react-toastify';
 
 function ProductPage() {
@@ -13,7 +14,8 @@ function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [mainImage, setMainImage] = useState('');
   const { cartItems, addToCart, removeItem } = useCartContext();
-  const { wishlist, handleAddToWishlist: addToWishlist, handleRemoveFromWishlist } = useWishlistContext(); 
+  const { wishlist, handleAddToWishlist: addToWishlist, handleRemoveFromWishlist } = useWishlistContext();
+  const { user } = useUserContext(); // Get the user context
   const navigate = useNavigate(); // Initialize useNavigate
 
   const getProductDetails = async () => {
@@ -51,12 +53,18 @@ function ProductPage() {
   };
 
   const handleBuyNow = () => {
-    navigate(`/buynow/${params.id}`); // Redirect to /buynow/productId using navigate
+    if (user && user._id === productDetails.userId) {
+      toast.error("Cannot buy your own product");
+    } else {
+      navigate(`/buynow/${params.id}`); // Redirect to /buynow/productId using navigate
+    }
   };
 
   useEffect(() => {
     getProductDetails();
   }, []);
+
+  const isOwner = user && productDetails.userId === user._id; // Check if the current user is the owner of the product
 
   return (
     <div className='pt-[16vh]'>
@@ -93,10 +101,26 @@ function ProductPage() {
                 {productDetails?.description}
               </div>
               <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:gap-4 sm:mx-auto">
-                <button className='bg-white active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-[#f54748]' onClick={handleToggleWishlist}>
-                  {wishlist.some(item => item.product._id === productDetails._id) ? "Favourited" : "Favourite"}
-                </button>
-                {cartItems.some(item => item.product._id === productDetails._id) ? (
+                {isOwner ? (
+                  <button
+                    className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-3 text-lg font-medium text-white'
+                    disabled
+                  >
+                    Cannot favourite your own product
+                  </button>
+                ) : (
+                  <button className='bg-white active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-[#f54748]' onClick={handleToggleWishlist}>
+                    {wishlist.some(item => item.product._id === productDetails._id) ? "Favourited" : "Favourite"}
+                  </button>
+                )}
+                {isOwner ? (
+                  <button
+                    className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-3 text-lg font-medium text-white'
+                    disabled
+                  >
+                    Cannot add to cart your own product
+                  </button>
+                ) : cartItems.some(item => item.product._id === productDetails._id) ? (
                   <button className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-3 text-lg font-medium text-white'>
                     Already in cart
                   </button>
@@ -106,7 +130,7 @@ function ProductPage() {
                   </button>
                 )}
                 <button className='bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white' onClick={handleBuyNow}>
-                  Buy Now
+                  {isOwner ? "Cannot buy your own product" : "Buy Now"}
                 </button>
               </div>
             </div>

@@ -2,13 +2,17 @@ import React from 'react';
 import { FaStar } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useWishlistContext } from '../../context/wishlistContext'; 
+import { useUserContext } from '../../context/userContext'; 
 import heart from '../assets/favourite.png'; 
 import filledHeart from '../assets/hearth.png'; 
 
 function Product({ curElem }) {
   const { wishlist, handleAddToWishlist, handleRemoveFromWishlist } = useWishlistContext();
+  const { user } = useUserContext();
 
   const inWishlist = wishlist.some(item => item.product._id === curElem._id);
+
+  const isOwner = user && curElem.userId === user._id;
 
   const handleToggleWishlist = () => {
     if (inWishlist) {
@@ -30,8 +34,9 @@ function Product({ curElem }) {
         </Link>
         <div className='absolute top-2 left-2'>
           <button 
-            className='shadow-sm hover:bg-red-700 p-5 rounded-full relative' 
-            onClick={handleToggleWishlist}
+            className={`shadow-sm hover:bg-red-700 p-5 rounded-full relative ${isOwner && 'cursor-not-allowed pointer-events-none'}`} 
+            onClick={!isOwner ? handleToggleWishlist : undefined}
+            disabled={isOwner}
           >
             <img
               src={inWishlist ? filledHeart : heart}
@@ -56,8 +61,12 @@ function Product({ curElem }) {
           <span className='font-medium'>({curElem?.reviews?.length})</span>
         </div>
       </div>
-      <Link to={`/buynow/${curElem?._id}`} className='bg-[#f54748] active:scale-90 transition duration-150 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white mt-auto'>
-        Buy now
+      <Link 
+        to={`/buynow/${curElem?._id}`} 
+        className={`bg-[#f54748] active:scale-90 transition duration-150 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white mt-auto ${isOwner && 'cursor-not-allowed pointer-events-none'}`}
+        disabled={isOwner}
+      >
+        {isOwner ? "Owned" : "Buy now"}
       </Link>
     </div>
   );
