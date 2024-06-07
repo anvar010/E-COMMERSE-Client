@@ -1,17 +1,18 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { useCartContext } from '../../context/cartContext';
-import { Link } from 'react-router-dom';
 
 function Buy() {
   const params = useParams();
+  const navigate = useNavigate();
   const [productDetails, setProductDetails] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const { addToCart, cartItems } = useCartContext();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('dbt');
   const userId = params.userId;
+  const productId = params.id;
   const shippingCost = 20;
   const total = (productDetails?.price ?? 0) * quantity + shippingCost;
 
@@ -36,7 +37,6 @@ function Buy() {
     getProductDetails();
   }, [params.id, cartItems]);
 
-
   const handleAddToCart = () => {
     if (productDetails) {
       addToCart({ ...productDetails, qty: quantity, userId: userId });
@@ -52,6 +52,36 @@ function Buy() {
   const handleIncreaseQuantity = () => {
     setQuantity(quantity + 1);
   };
+
+  const handlePlaceOrder = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'http://localhost:8000/api/v1/order/order',
+        {
+          products: [{ productId: productId, quantity: quantity }], // Send details of the currently selected product only
+          userId: userId,
+          paymentMethod: selectedPaymentMethod,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (response.data.success) {
+        navigate('/success');
+      } else {
+        console.error('Order creation failed:', response.data.error);
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+    }
+  };
+  
+  
+  
 
   return (
     <div className='pt-[16vh]'>
@@ -141,9 +171,13 @@ function Buy() {
                       <img src="https://www.logolynx.com/images/logolynx/c3/c36093ca9fb6c250f74d319550acac4d.jpeg" alt="Paypal" className="ml-2 w-15 h-8" />
                     </label>
                   </div>
-                  <Link to={'/success'}>
-                    <button type="button" className="w-full shadow-sm text-white bg-red-500 py-2 rounded-full mt-4 hover:bg-red-700 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-[#52ad9c]">Place Order</button>
-                  </Link>
+                  <button
+                    type="button"
+                    onClick={handlePlaceOrder}
+                    className="w-full shadow-sm text-white bg-red-500 py-2 rounded-full mt-4 hover:bg-red-700 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-[#52ad9c]"
+                  >
+                    Place Order
+                  </button>
                 </div>
               </div>
             </div>

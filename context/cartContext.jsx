@@ -16,7 +16,7 @@ const CartProvider = ({ children }) => {
         if (user) {
             setInitialized(true);
             fetchCartItems();
-            console.log("user : ",user)
+            // console.log("user : ",user)
         }
     }, [user]);
 

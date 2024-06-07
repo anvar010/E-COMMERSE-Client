@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
+import axios from 'axios'; // Import axios for making HTTP requests
 import { useCartContext } from '../../context/cartContext';
 
 function BuyNow() {
-  const { cartItems, increaseItemQuantity, removeItem } = useCartContext();
+  const { cartItems, increaseItemQuantity, removeItem, clearCart } = useCartContext();
   const [shippingCost] = useState(40);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('dbt'); 
+  const navigate = useNavigate(); 
 
   const getTotalPrice = () => {
     let totalPrice = 0;
@@ -19,6 +21,42 @@ function BuyNow() {
 
   const handlePaymentMethodChange = (method) => {
     setSelectedPaymentMethod(method);
+  };
+
+  const handlePlaceOrder = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('userId'); 
+
+      const response = await axios.post(
+        'http://localhost:8000/api/v1/order/order',
+        {
+          products: cartItems.map(item => ({
+            productId: item.product._id,
+            quantity: item.quantity
+          })),
+          userId: userId,
+          paymentMethod: selectedPaymentMethod,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        
+        // clearCart();
+
+       
+        navigate('/success');
+      } else {
+        console.error('Order creation failed:', response.data.error);
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+    }
   };
 
   return (
@@ -110,9 +148,7 @@ function BuyNow() {
                       <img src="https://www.logolynx.com/images/logolynx/c3/c36093ca9fb6c250f74d319550acac4d.jpeg" alt="Paypal" className="ml-2 w-15 h-8" />
                     </label>
                   </div>
-                  <Link to={'/success'}>
-                    <button type="button" className="w-full shadow-sm text-white bg-red-500 py-2 rounded-full mt-4 hover:bg-red-700 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-[#52ad9c]">Place Order</button>
-                  </Link>
+                  <button type="button" className="w-full shadow-sm text-white bg-red-500 py-2 rounded-full mt-4 hover:bg-red-700 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-[#52ad9c]" onClick={handlePlaceOrder}>Place Order</button>
                 </div>
               </div>
             </div>
