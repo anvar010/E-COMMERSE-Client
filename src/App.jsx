@@ -22,6 +22,7 @@ import EditPage from './pages/EditPage';
 import SpecialOffers from './component/SpecialOffers';
 import ViewWishlist from './pages/Wishlist';
 import Buy from './pages/Buy';
+import MyOrders from './pages/MyOrders';
 
 function App() {
   const { user, setUser } = useUserContext();
@@ -81,6 +82,8 @@ function App() {
         <Route path='/editproduct/:id' element={<ProtectedRoute><EditPage /></ProtectedRoute>} />
         <Route path='/offer-to-day' element={<ProtectedRoute><SpecialOffers /></ProtectedRoute>} />
         <Route path='/wishlist' element={<ProtectedRoute><ViewWishlist /></ProtectedRoute>} />
+        <Route path='/myorders' element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
+
 
       </Routes>
       <Footer />

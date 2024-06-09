@@ -73,7 +73,7 @@ export const WishlistProvider = ({ children }) => {
       );
 
       if (response.data.success) {
-        toast.success("Product removed from wishlist");
+        toast.info("Product removed from wishlist");
         setWishlist(prevWishlist => prevWishlist.filter(item => item.product._id !== productId));
       } else {
         toast.error(response.data.error);

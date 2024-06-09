@@ -43,6 +43,7 @@ function Navbar() {
             <div className="lg:flex hidden gap-8 items-center">
               <NavLink to="/" className='text-[#191919] text-xl font-medium hover:text-red-500 md:text-lg'>Home</NavLink>
               <a href= '/offer-to-day' className='text-[#191919] text-xl font-medium hover:text-red-500 md:text-lg'>Today's Offer</a>
+              <a href= '/myorders' className='text-[#191919] text-xl font-medium hover:text-red-500 md:text-lg'>My Orders</a>
               <a href="/wishlist" className='text-[#191919] text-xl font-medium hover:text-red-500 md:text-lg'>Wishlist</a>
               <Link to="/products" className='text-[#191919] text-xl font-medium hover:text-red-500 md:text-lg'>Our Products</Link>
               {user?.type === 'seller' && (

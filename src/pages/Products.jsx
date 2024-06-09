@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { useProductContext } from '../../context/productContext';
 import axios from 'axios';
 import { FaStar } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useProductContext } from '../../context/productContext';
 import { useCartContext } from '../../context/cartContext';
 import { useUserContext } from '../../context/userContext';
 import { useWishlistContext } from '../../context/wishlistContext';
-import { toast } from 'react-toastify';
 import heart from '../assets/favourite.png';
 import filledHeart from '../assets/hearth.png';
 
 function Products() {
   const { product, setProduct } = useProductContext();
   const [active, setActive] = useState(0);
-  const [value, setValue] = useState('all');
+  const [category, setCategory] = useState('all');
   const { cartItems, addToCart } = useCartContext();
   const { user } = useUserContext();
   const { wishlist, handleAddToWishlist, handleRemoveFromWishlist } = useWishlistContext();
 
-  const category = [
+  const categories = [
     { id: 0, name: 'All', value: 'all' },
     { id: 1, name: 'Dress', value: 'Dress' },
     { id: 2, name: 'Shoes', value: 'Shoes' },
@@ -29,50 +29,38 @@ function Products() {
 
   const handleBtn = (btn) => {
     setActive(btn.id);
-    setValue(btn.value);
+    setCategory(btn.value);
   };
 
-  const getProducts = async () => {
+  const getProductsByCategory = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/v1/product/getAllProduct?category=${value}`);
-      if (res.data.success) {
+      let res;
+      if (category === 'all') {
+        res = await axios.get(`http://localhost:8000/api/v1/product/getAllProduct`);
         setProduct(res.data.data.product);
+      } else {
+        res = await axios.get(`http://localhost:8000/api/v1/product/category/${category}`);
+        setProduct(res.data.data.products);
       }
+      
+      // if (res.data.success) {
+        
+      // }
     } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleAddToCart = (product) => {
-    const productInCart = cartItems.find(item => item.product._id === product._id);
-    if (productInCart) {
-      toast.error("Product already in cart");
-      console.log("Product already in cart");
-    } else {
-      addToCart(product);
-      toast.success("Product added to cart");
-    }
-  };
-
-  const handleToggleWishlist = (productId) => {
-    const inWishlist = wishlist.some(item => item.product._id === productId);
-    if (inWishlist) {
-      handleRemoveFromWishlist(productId);
-    } else {
-      handleAddToWishlist(productId);
+      console.error("Error fetching products by category:", error);
     }
   };
 
   useEffect(() => {
-    getProducts();
-  }, [value]);
+    getProductsByCategory();
+  }, [category]);
 
   return (
     <div className='pt-[16vh]'>
       <div className='container mx-auto py-8'>
         <div className='p-5 mb-14'>
           <div className='flex flex-wrap justify-center mb-8 gap-5'>
-            {category?.map((btn) => (
+            {categories.map((btn) => (
               <button
                 className={
                   active === btn.id
@@ -92,7 +80,7 @@ function Products() {
             {product?.map((curElem) => {
               const inWishlist = wishlist.some(item => item.product._id === curElem._id);
               const productImage = curElem?.productImages && curElem.productImages.length > 0 ? curElem.productImages[0] : ''; 
-              const isOwner = user && curElem.userId === user._id; // Check if user is not null and is the owner of the product
+              const isOwner = user && curElem.userId === user._id;
 
               return (
                 <div className="food-card bg-red-500/10 rounded-xl flex flex-col cursor-pointer items-center p-5" key={curElem._id}>

@@ -10,8 +10,9 @@ function ProductListByUser() {
   const { product, setProduct } = useProductContext();
   const [active, setActive] = useState(0);
   const [value, setValue] = useState('all');
-  const { addToCart } = useCartContext();
   const { user } = useUserContext();
+  const [category, setCategory] = useState('all');
+
 
   const categories = [
     { id: 0, name: 'All', value: 'all' },
@@ -25,44 +26,60 @@ function ProductListByUser() {
   const handleBtn = (btn) => {
     setActive(btn.id);
     setValue(btn.value);
-    getProductsByCategory(btn.value); // Fetch products by category when a category button is clicked
+    setCategory(btn.value); 
   };
 
-  const getProductsByCategory = async (categoryValue) => {
-    try {
-      const res = await axios.get(`http://localhost:8000/api/v1/product/getAllProduct?category=${categoryValue}`);
-      if (res.data.success) {
-        setProduct(res.data.data.product);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getProducts = async () => {
+  const getProductsByCategory = async () => {
     const token = localStorage.getItem('token');
+  
     try {
-      const res = await axios.get(`http://localhost:8000/api/v1/product/userProducts/${user._id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.data.success) {
-        const fetchedProducts = res.data.data.product;
+      let res;
+      if (category === 'all') {
+        res = await axios.get(`http://localhost:8000/api/v1/product/userProducts/${user._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setProduct(res.data.data.products);
-        console.log("Fetched products: ", res.data.data.products);
+        console.log(res);
+      } else {
+        res = await axios.get(`http://localhost:8000/api/v1/product/category/${category}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setProduct(res.data.data.products);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching products by category:", error);
     }
   };
   
 
+  // const getProducts = async () => {
+  //   const token = localStorage.getItem('token');
+  //   try {
+  //     const res = await axios.get(`http://localhost:8000/api/v1/product/userProducts/${user._id}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (res.data.success) {
+  //       const fetchedProducts = res.data.data.product;
+  //       setProduct(res.data.data.products);
+  //       console.log("Fetched products: ", res.data.data.products);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  
+
   useEffect(() => {
     if (user) {
-      getProducts();
+      getProductsByCategory();
     }
-  }, [user]);
+  }, [user,category]);
 
   return (
     <div className='pt-[16vh]'>
