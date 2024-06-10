@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaStar } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { useProductContext } from '../../context/productContext';
 import { useCartContext } from '../../context/cartContext';
 import { useUserContext } from '../../context/userContext';
@@ -42,10 +41,6 @@ function Products() {
         res = await axios.get(`http://localhost:8000/api/v1/product/category/${category}`);
         setProduct(res.data.data.products);
       }
-      
-      // if (res.data.success) {
-        
-      // }
     } catch (error) {
       console.error("Error fetching products by category:", error);
     }
@@ -54,6 +49,15 @@ function Products() {
   useEffect(() => {
     getProductsByCategory();
   }, [category]);
+
+  const handleToggleWishlist = (productId) => {
+    const inWishlist = wishlist.some(item => item.product._id === productId);
+    if (inWishlist) {
+      handleRemoveFromWishlist(productId);
+    } else {
+      handleAddToWishlist(productId);
+    }
+  };
 
   return (
     <div className='pt-[16vh]'>

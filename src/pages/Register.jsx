@@ -50,6 +50,12 @@ function Register() {
         const password = form.password.value;
         const passwordConfirm = form.confirmPassword.value;
         const profileImage = image?.url;
+
+        if (!name || !email || !type || !password || !passwordConfirm) {
+            toast.error('Please fill in all fields.');
+            return;
+        }
+        
         const userData = { name, email, type, password, passwordConfirm, profileImage };
 
         fetch("http://localhost:8000/api/v1/user/register", {

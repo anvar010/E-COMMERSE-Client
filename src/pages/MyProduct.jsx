@@ -3,7 +3,6 @@ import { useProductContext } from '../../context/productContext';
 import axios from 'axios';
 import { FaHeart, FaStar } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useCartContext } from '../../context/cartContext';
 import { useUserContext } from '../../context/userContext';
 
 function ProductListByUser() {
@@ -41,7 +40,7 @@ function ProductListByUser() {
           },
         });
         setProduct(res.data.data.products);
-        console.log(res);
+        // console.log(res);
       } else {
         res = await axios.get(`http://localhost:8000/api/v1/product/category/${category}`, {
           headers: {

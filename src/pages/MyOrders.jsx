@@ -68,9 +68,9 @@ const MyOrders = () => {
     }, [user]);
 
     return (
-        <div className="container mx-auto p-4 bg-white shadow-md rounded-md mt-10">
+        <div className="container mx-auto p-4 bg-white shadow-md rounded-md mt-24">
             {loading && <p className="text-center">Loading...</p>}
-            {error && <p className="text-center text-red-500">{error}</p>}
+            {error && <p className="text-center text-gray-500">No Orders Found On this Profile</p>}
             {!loading && !error && orders.length === 0 && (
                 <p className="text-center">No orders found for this user</p>
             )}
