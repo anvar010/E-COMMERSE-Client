@@ -1,22 +1,25 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
-import PageNavigation from '../component/PageNavigation';
-import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useCartContext } from '../../context/cartContext';
-import { useWishlistContext } from '../../context/wishlistContext'; // Import the wishlist context
-import { useUserContext } from '../../context/userContext'; // Import the user context
+import { useWishlistContext } from '../../context/wishlistContext';
+import { useUserContext } from '../../context/userContext';
 import { toast } from 'react-toastify';
+import PageNavigation from '../component/PageNavigation';
 
 function ProductPage() {
   const params = useParams();
   const [productDetails, setProductDetails] = useState({});
   const [quantity, setQuantity] = useState(1);
   const [mainImage, setMainImage] = useState('');
-  const { cartItems, addToCart, removeItem } = useCartContext();
-  const { wishlist, handleAddToWishlist: addToWishlist, handleRemoveFromWishlist } = useWishlistContext();
-  const { user } = useUserContext(); // Get the user context
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const [productRating, setProductRating] = useState(0);
+  const [reviews, setReviews] = useState([]);
+  const { cartItems, addToCart } = useCartContext();
+  const { wishlist, handleAddToWishlist, handleRemoveFromWishlist } = useWishlistContext();
+  const { user } = useUserContext();
+  const navigate = useNavigate();
 
   const getProductDetails = async () => {
     try {
@@ -25,6 +28,8 @@ function ProductPage() {
         const product = res.data.data.product;
         setProductDetails(product);
         setMainImage(product.productImages[0]);
+        setProductRating(product.rating);
+        setReviews(product.reviews);
       }
     } catch (error) {
       console.log(error);
@@ -45,18 +50,39 @@ function ProductPage() {
     const productInWishlist = wishlist.find(item => item.product._id === productDetails._id);
     if (productInWishlist) {
       handleRemoveFromWishlist(productDetails._id);
-      // toast.success("Product removed from wishlist");
     } else {
-      addToWishlist(productDetails._id); 
-      // toast.success("Product added to wishlist");
+      handleAddToWishlist(productDetails._id);
     }
   };
 
   const handleBuyNow = () => {
-    if (user && user._id === productDetails.userId) {
+    if (productDetails.stock <= 0) {
+      toast.error("Product is out of stock");
+    } else if (user && user._id === productDetails.userId) {
       toast.error("Cannot buy your own product");
     } else {
-      navigate(`/buynow/${params.id}`); // Redirect to /buynow/productId using navigate
+      navigate(`/buynow/${params.id}`);
+    }
+  };
+
+  const handleRatingSubmit = async () => {
+    try {
+      const res = await axios.post(`http://localhost:8000/api/v1/product/${params.id}/reviews`, {
+        rating: rating,
+        comment: comment,
+        userId: user._id, // Assuming your user object has _id property
+      });
+      if (res.data.success) {
+        toast.success("Product rated successfully");
+        setRating(0);
+        setComment('');
+        getProductDetails(); // Fetch updated product details including reviews
+      } else {
+        toast.error("Failed to rate product");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to rate product");
     }
   };
 
@@ -64,14 +90,13 @@ function ProductPage() {
     getProductDetails();
   }, []);
 
-  const isOwner = user && productDetails.userId === user._id; // Check if the current user is the owner of the product
+  const isOwner = user && productDetails.userId === user._id;
 
   return (
     <div className='pt-[16vh]'>
       <div className='py-3 px-4 md:px-6 lg:px-8'>
         <div className="container mx-auto">
           <PageNavigation title={productDetails?.name} />
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className='flex'>
               <div className='flex flex-col items-start'>
@@ -129,12 +154,75 @@ function ProductPage() {
                     Add to Cart
                   </button>
                 )}
-                <button className='bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white' onClick={handleBuyNow}>
-                  {isOwner ? "Cannot buy your own product" : "Buy Now"}
+                <button className={`bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white ${productDetails.stock <= 0 && 'cursor-not-allowed'}`} onClick={handleBuyNow}>
+                  {isOwner ? "Cannot buy your own product" : productDetails.stock <= 0 ? "Out of Stock" : "Buy Now"}
                 </button>
               </div>
             </div>
           </div>
+
+          {/* Rating Section */}
+          <div className="bg-gray-200 border rounded p-8 mt-8">
+            <h2 className="text-2xl mb-4 font-bold">Rate This Product</h2>
+            <div className="flex items-center space-x-2 mb-4">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  className={`cursor-pointer text-2xl ${rating >= star ? 'text-yellow-500' : 'text-gray-300'}`}
+                  onClick={() => setRating(star)}
+                >
+                  &#9733;
+                </span>
+              ))}
+            </div>
+            <textarea
+              className="border rounded w-full h-20 p-2 mb-4"
+              placeholder="Write a comment..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            <button
+              className={`bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white ${productDetails.stock <= 0 && 'cursor-not-allowed'}`}
+              onClick={handleRatingSubmit}
+              disabled={!rating || !comment.trim()} // Disable button if rating or comment is empty
+            >
+              Submit Rating
+            </button>
+          </div>
+
+          {/* Display Product Reviews */}
+          {reviews.length > 0 && (
+            <div className="bg-gray-200 border rounded p-8 mt-8">
+              <h2 className="text-2xl mb-4 font-bold">Product Reviews</h2>
+              {reviews.map((review, index) => (
+                <div key={index} className="mb-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        className={`text-2xl ${review.rating >= star ? 'text-yellow-500' : 'text-gray-300'}`}
+                      >
+                        &#9733;
+                      </span>
+                    ))}
+                  </div>
+                  <p className="text-lg mb-2">{review.comment}</p>
+                  {review.user ? (
+                    <div className="flex items-center">
+                      <img
+                        src={review.user.profileImage}
+                        alt={`${review.user.name}'s profile`}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                      <span className="ml-2">{review.user.name}</span>
+                    </div>
+                  ) : (
+                    <span className="text-gray-400">Anonymous</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -50,6 +50,17 @@ function Products() {
     getProductsByCategory();
   }, [category]);
 
+  const handleAddToCart = (productToAdd) => {
+    const productInCart = cartItems.find(item => item.product._id === productToAdd._id);
+    if (productInCart) {
+      // If product is already in cart, increase the quantity
+      addToCart({ ...productToAdd, qty: productInCart.quantity + 1 });
+    } else {
+      // If product is not in cart, add it with quantity 1
+      addToCart({ ...productToAdd, qty: 1 });
+    }
+  };
+
   const handleToggleWishlist = (productId) => {
     const inWishlist = wishlist.some(item => item.product._id === productId);
     if (inWishlist) {
@@ -85,6 +96,7 @@ function Products() {
               const inWishlist = wishlist.some(item => item.product._id === curElem._id);
               const productImage = curElem?.productImages && curElem.productImages.length > 0 ? curElem.productImages[0] : ''; 
               const isOwner = user && curElem.userId === user._id;
+              const stock = curElem.stock || 0; // Default to 0 if stock information is not available
 
               return (
                 <div className="food-card bg-red-500/10 rounded-xl flex flex-col cursor-pointer items-center p-5" key={curElem._id}>
@@ -131,24 +143,20 @@ function Products() {
                       <span className='font-medium'>({curElem?.reviews?.length})</span>
                     </div>
                   </div>
-                  {isOwner ? (
-                    <button
-                      className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-2 text-xl font-medium text-white mt-auto'
-                      disabled
-                    >
+                  {stock <= 0 ? (
+                    <button className='bg-gray-300 rounded-full px-8 py-2 text-xl font-medium text-white mt-auto' disabled>
+                      Out of Stock
+                    </button>
+                  ) : isOwner ? (
+                    <button className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-2 text-xl font-medium text-white mt-auto' disabled>
                       Cannot buy your own product
                     </button>
                   ) : cartItems.some(item => item.product._id === curElem._id) ? (
-                    <button
-                      className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-2 text-xl font-medium text-white mt-auto'
-                    >
+                    <button className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-2 text-xl font-medium text-white mt-auto'>
                       Already in cart
                     </button>
                   ) : (
-                    <button
-                      className='bg-[#f54748] active:scale-90 transition duration-150 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white mt-auto'
-                      onClick={() => handleAddToCart(curElem)}
-                    >
+                    <button className='bg-[#f54748] active:scale-90 transition duration-150 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white mt-auto' onClick={() => handleAddToCart(curElem)}>
                       Add to Cart
                     </button>
                   )}

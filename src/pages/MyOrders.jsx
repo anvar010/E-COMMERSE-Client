@@ -78,10 +78,9 @@ const MyOrders = () => {
                 <div className="order-list">
                     <h2 className="text-2xl font-semibold mb-6 text-center">Order Summary</h2>
                     {orders.map(order => {
-                       
                         const totalPrice = order.products.reduce((acc, product) => {
                             const productInfo = getProductInfo(product.productId);
-                            return acc + (productInfo ? productInfo.price : 0);
+                            return acc + (productInfo ? productInfo.price * product.quantity : 0);
                         }, 0);
 
                         // Adding delivery charge
@@ -106,7 +105,6 @@ const MyOrders = () => {
                                             const productInfo = getProductInfo(product.productId);
                                             return (
                                                 <li key={product.productId} className="order-item flex items-center space-x-6 mb-4">
-                                                  
                                                     {productInfo && (
                                                         <img
                                                             src={productInfo.productImages[0]}
@@ -116,7 +114,8 @@ const MyOrders = () => {
                                                     )}
                                                     <div>
                                                         <p className="font-semibold">{productInfo && productInfo.name}</p>
-                                                        <p>${productInfo && productInfo.price}</p>
+                                                        <p>Price: ${productInfo && productInfo.price}</p>
+                                                        <p>Quantity: {product.quantity}</p> {/* Displaying quantity */}
                                                     </div>
                                                 </li>
                                             );

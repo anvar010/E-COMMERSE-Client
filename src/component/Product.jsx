@@ -1,18 +1,18 @@
 import React from 'react';
 import { FaStar } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useWishlistContext } from '../../context/wishlistContext'; 
-import { useUserContext } from '../../context/userContext'; 
-import heart from '../assets/favourite.png'; 
-import filledHeart from '../assets/hearth.png'; 
+import { useWishlistContext } from '../../context/wishlistContext';
+import { useUserContext } from '../../context/userContext';
+import heart from '../assets/favourite.png';
+import filledHeart from '../assets/hearth.png';
 
 function Product({ curElem }) {
   const { wishlist, handleAddToWishlist, handleRemoveFromWishlist } = useWishlistContext();
   const { user } = useUserContext();
 
   const inWishlist = wishlist.some(item => item.product._id === curElem._id);
-
   const isOwner = user && curElem.userId === user._id;
+  const stock = curElem.stock || 0; // Default to 0 if stock information is not available
 
   const handleToggleWishlist = () => {
     if (inWishlist) {
@@ -25,7 +25,7 @@ function Product({ curElem }) {
   return (
     <div className="food-card bg-red-500/10 rounded-xl flex flex-col items-center p-5 cursor-pointer">
       <div className="relative mb-3 w-full">
-        <Link to={`/products/${curElem?._id}`}>
+        <Link to={`/products/${curElem._id}`}>
           <img 
             src={curElem?.productImages[0]} 
             alt={curElem.name || 'Product Image'} 
@@ -61,13 +61,22 @@ function Product({ curElem }) {
           <span className='font-medium'>({curElem?.reviews?.length})</span>
         </div>
       </div>
-      <Link 
-        to={`/buynow/${curElem?._id}`} 
-        className={`bg-[#f54748] active:scale-90 transition duration-150 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white mt-auto ${isOwner && 'cursor-not-allowed pointer-events-none'}`}
-        disabled={isOwner}
-      >
-        {isOwner ? "Owned" : "Buy now"}
-      </Link>
+      {isOwner ? (
+        <button className="bg-gray-300 cursor-not-allowed rounded-full px-8 py-2 text-xl font-medium text-white mt-auto">
+          Owned
+        </button>
+      ) : stock <= 0 ? (
+        <button className="bg-gray-300 cursor-not-allowed rounded-full px-8 py-2 text-xl font-medium text-white mt-auto">
+          Out of Stock
+        </button>
+      ) : (
+        <Link 
+          to={`/buynow/${curElem._id}`} 
+          className="bg-[#f54748] active:scale-90 transition duration-150 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white mt-auto"
+        >
+          Buy now
+        </Link>
+      )}
     </div>
   );
 }
