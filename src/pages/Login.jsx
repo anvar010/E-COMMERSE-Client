@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import logo from "../assets/logo.png";
-import { Link } from 'react-router-dom';
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';  // Importing icons for show/hide password
@@ -44,6 +43,12 @@ function Login() {
         setShowPassword(prevState => !prevState);
     };
 
+    const handleForgotPassword = () => {
+        // Handle forgot password logic here
+        // Example: navigate to the forgot password page
+        navigate("/forgot-password");
+    };
+
     return (
         <div className='login'>
             <div className='h-screen pt-[16vh]'>
@@ -78,7 +83,11 @@ function Login() {
                         </div>
                     </div>
                     <button className='bg-[#f54748] active:scale-90 transition duration-150 transform hover:shadow-xl shadow-md w-full rounded-full px-8 py-2 text-xl font-medium text-white mx-auto text-center' type='submit'>Sign In</button>
-                    <Link to="/register" className="text-[#fdc55e] text-center font-semibold w-full mb-3 py-2 px-4 rounded">Create an Account</Link>
+                    <div className="flex justify-between w-full mb-3">
+                        <Link to="/register" className="text-[#fdc55e] text-center font-semibold py-2 px-4 rounded">Create an Account</Link>
+                        <Link to="/forgot-password" className="text-[#3182ce] text-center font-semibold py-2 px-4 rounded" onClick={handleForgotPassword}>Forgot Password?</Link>
+                    </div>
+                    
                     <ToastContainer />
                 </form>
             </div>

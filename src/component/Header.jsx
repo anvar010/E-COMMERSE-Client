@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaPlay, FaSearch } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 import { useProductContext } from '../../context/productContext';
 import axios from 'axios';
 import header from '../assets/banner.jpg';
@@ -80,17 +81,20 @@ function Header() {
               <div className="mt-4 text-red-600">{error}</div>
             )}
             <div className="flex flex-col sm:flex-row gap-8 items-center mt-4">
-              <button className='bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white'>
+              <Link to={'/products'}><button className='bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-2 text-xl font-medium text-white'>
                 Explore Now
-              </button>
+              </button></Link>
+              <Link to={'https://www.youtube.com/@SHOPNOW-sd7kk'}>
               <div className="flex gap-4 items-center">
                 <div className='h-14 w-14 shadow-md cursor-pointer relative bg-white rounded-full'>
                   <FaPlay size={18} className='cursor-pointer text-[#f54748] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'/>
                 </div>
+
                 <div className='lg:text-xl text-[#191919] md:text-lg text-base cursor-pointer'>
                   Watch Now
                 </div>
-              </div>
+               
+              </div> </Link>
             </div>
            
           </div>

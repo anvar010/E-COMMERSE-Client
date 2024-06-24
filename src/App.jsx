@@ -23,6 +23,9 @@ import SpecialOffers from './component/SpecialOffers';
 import ViewWishlist from './pages/Wishlist';
 import Buy from './pages/Buy';
 import MyOrders from './pages/MyOrders';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPasswordForm from './pages/ResetPassword';
+
 
 function App() {
   const { user, setUser } = useUserContext();
@@ -83,8 +86,8 @@ function App() {
         <Route path='/offer-to-day' element={<ProtectedRoute><SpecialOffers /></ProtectedRoute>} />
         <Route path='/wishlist' element={<ProtectedRoute><ViewWishlist /></ProtectedRoute>} />
         <Route path='/myorders' element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
-
-
+        <Route path='/reset-password/:token' element={<ResetPasswordForm />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
       </Routes>
       <Footer />
     </>
