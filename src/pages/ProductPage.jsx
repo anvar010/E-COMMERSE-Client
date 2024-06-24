@@ -16,6 +16,7 @@ function ProductPage() {
   const [comment, setComment] = useState('');
   const [productRating, setProductRating] = useState(0);
   const [reviews, setReviews] = useState([]);
+  const [users, setUsers] = useState([]); // State to store all users
   const { cartItems, addToCart } = useCartContext();
   const { wishlist, handleAddToWishlist, handleRemoveFromWishlist } = useWishlistContext();
   const { user } = useUserContext();
@@ -30,10 +31,28 @@ function ProductPage() {
         setMainImage(product.productImages[0]);
         setProductRating(product.rating);
         setReviews(product.reviews);
+
+        // Fetch all users for review names with authorization token
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const usersRes = await axios.get('http://localhost:8000/api/v1/user/alluser', config);
+        if (usersRes.data.success) {
+          setUsers(usersRes.data.data.users);
+        }
       }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  // Function to get user details from user ID
+  const getUserDetails = (userId) => {
+    const user = users.find(u => u._id === userId);
+    return user ? { name: user.name, profileImage: user.profileImage } : { name: 'Unknown User', profileImage: '' };
   };
 
   const handleAddToCart = () => {
@@ -67,11 +86,35 @@ function ProductPage() {
 
   const handleRatingSubmit = async () => {
     try {
-      const res = await axios.post(`http://localhost:8000/api/v1/product/${params.id}/reviews`, {
-        rating: rating,
-        comment: comment,
-        userId: user._id, // Assuming your user object has _id property
-      });
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        toast.error("Authentication token not found");
+        return;
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      // Check if the user is the owner of the product
+      if (user && user._id === productDetails.userId) {
+        toast.error("Cannot rate your own product");
+        return;
+      }
+
+      const res = await axios.post(
+        `http://localhost:8000/api/v1/product/${params.id}/reviews`,
+        {
+          rating: rating,
+          comment: comment,
+          userId: user._id,
+        },
+        config
+      );
+
       if (res.data.success) {
         toast.success("Product rated successfully");
         setRating(0);
@@ -98,6 +141,7 @@ function ProductPage() {
         <div className="container mx-auto">
           <PageNavigation title={productDetails?.name} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Product Images */}
             <div className='flex'>
               <div className='flex flex-col items-start'>
                 {productDetails?.productImages?.map((image, index) => (
@@ -115,6 +159,7 @@ function ProductPage() {
               </div>
             </div>
 
+            {/* Product Details */}
             <div className='bg-red-200/[.3] border rounded mb-5 p-8 text-black'>
               <div className='text-2xl mb-4 font-bold text-[#f54748]'>
                 {productDetails?.name}
@@ -126,6 +171,7 @@ function ProductPage() {
                 {productDetails?.description}
               </div>
               <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:gap-4 sm:mx-auto">
+                {/* Wishlist Button */}
                 {isOwner ? (
                   <button
                     className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-3 text-lg font-medium text-white'
@@ -138,6 +184,7 @@ function ProductPage() {
                     {wishlist.some(item => item.product._id === productDetails._id) ? "Favourited" : "Favourite"}
                   </button>
                 )}
+                {/* Add to Cart Button */}
                 {isOwner ? (
                   <button
                     className='bg-gray-300 cursor-not-allowed rounded-full px-8 py-3 text-lg font-medium text-white'
@@ -154,6 +201,7 @@ function ProductPage() {
                     Add to Cart
                   </button>
                 )}
+                {/* Buy Now Button */}
                 <button className={`bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white ${productDetails.stock <= 0 && 'cursor-not-allowed'}`} onClick={handleBuyNow}>
                   {isOwner ? "Cannot buy your own product" : productDetails.stock <= 0 ? "Out of Stock" : "Buy Now"}
                 </button>
@@ -162,33 +210,35 @@ function ProductPage() {
           </div>
 
           {/* Rating Section */}
-          <div className="bg-gray-200 border rounded p-8 mt-8">
-            <h2 className="text-2xl mb-4 font-bold">Rate This Product</h2>
-            <div className="flex items-center space-x-2 mb-4">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  className={`cursor-pointer text-2xl ${rating >= star ? 'text-yellow-500' : 'text-gray-300'}`}
-                  onClick={() => setRating(star)}
-                >
-                  &#9733;
-                </span>
-              ))}
+          {!isOwner && ( // Only show rating section if user is not the owner
+            <div className="bg-gray-200 border rounded p-8 mt-8">
+              <h2 className="text-2xl mb-4 font-bold">Rate This Product</h2>
+              <div className="flex items-center space-x-2 mb-4">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={`cursor-pointer text-2xl ${rating >= star ? 'text-yellow-500' : 'text-gray-300'}`}
+                    onClick={() => setRating(star)}
+                  >
+                    &#9733;
+                  </span>
+                ))}
+              </div>
+              <textarea
+                className="border rounded w-full h-20 p-2 mb-4"
+                placeholder="Write a comment..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <button
+                className={`bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white ${productDetails.stock <= 0 && 'cursor-not-allowed'}`}
+                onClick={handleRatingSubmit}
+                disabled={!rating || !comment.trim()} // Disable button if rating or comment is empty
+              >
+                Submit Rating
+              </button>
             </div>
-            <textarea
-              className="border rounded w-full h-20 p-2 mb-4"
-              placeholder="Write a comment..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-            <button
-              className={`bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white ${productDetails.stock <= 0 && 'cursor-not-allowed'}`}
-              onClick={handleRatingSubmit}
-              disabled={!rating || !comment.trim()} // Disable button if rating or comment is empty
-            >
-              Submit Rating
-            </button>
-          </div>
+          )}
 
           {/* Display Product Reviews */}
           {reviews.length > 0 && (
@@ -207,18 +257,20 @@ function ProductPage() {
                     ))}
                   </div>
                   <p className="text-lg mb-2">{review.comment}</p>
-                  {review.user ? (
-                    <div className="flex items-center">
-                      <img
-                        src={review.user.profileImage}
-                        alt={`${review.user.name}'s profile`}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                      <span className="ml-2">{review.user.name}</span>
-                    </div>
-                  ) : (
-                    <span className="text-gray-400">Anonymous</span>
-                  )}
+                  <div className="flex items-center">
+                    {review.user ? (
+                      <>
+                        <img
+                          src={getUserDetails(review.user).profileImage}
+                          alt={`${getUserDetails(review.user).name}'s profile`}
+                          className="w-7 h-7 rounded-full object-cover"
+                        />
+                        <span className="ml-2">{getUserDetails(review.user).name}</span>
+                      </>
+                    ) : (
+                      <span className="text-gray-400">Anonymous</span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
