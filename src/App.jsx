@@ -25,6 +25,11 @@ import Buy from './pages/Buy';
 import MyOrders from './pages/MyOrders';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPasswordForm from './pages/ResetPassword';
+import AdminPage from './pages/admin.jsx/Dashboard';
+
+import AdminLoginPage from './pages/admin.jsx/AdminLoginPage';
+import ShowProductPage from './pages/admin.jsx/ShowProduct';
+import ProductsBySellerDetails from './pages/ProductlistBySellerDetails';
 
 
 function App() {
@@ -53,7 +58,7 @@ function App() {
 
           } else {
             console.log("User data fetch failed, clearing localStorage");
-            localStorage.clear();
+            // localStorage.clear();
           }
         } catch (error) {
           console.error("Error initializing user:", error);
@@ -64,10 +69,14 @@ function App() {
 
     initializeUser();
   }, [setUser]);
+  const shouldDisplayNavbarAndFooter = !(
+    location.pathname.startsWith('/admin')
+  );
+
 
   return (
     <>
-      <Navbar />
+      {shouldDisplayNavbarAndFooter && <Navbar />}
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
@@ -88,8 +97,16 @@ function App() {
         <Route path='/myorders' element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
         <Route path='/reset-password/:token' element={<ResetPasswordForm />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
+
+        <Route path='/admin' element={<AdminPage />} />
+      
+      <Route path='/admin-login' element={<AdminLoginPage />} />
+      <Route path='/admin-products/:id' element={<ShowProductPage />} />
+      <Route path='/getproductBySeller/:sellerId' element={<ProductsBySellerDetails />} />
       </Routes>
-      <Footer />
+      
+      {shouldDisplayNavbarAndFooter && <Footer />}
+      
     </>
   );
 }

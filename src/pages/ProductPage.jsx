@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate,Link } from 'react-router-dom';
 import { useCartContext } from '../../context/cartContext';
 import { useWishlistContext } from '../../context/wishlistContext';
 import { useUserContext } from '../../context/userContext';
@@ -21,6 +21,7 @@ function ProductPage() {
   const { wishlist, handleAddToWishlist, handleRemoveFromWishlist } = useWishlistContext();
   const { user } = useUserContext();
   const navigate = useNavigate();
+  const [sellerDetails, setSellerDetails] = useState({});
 
   const getProductDetails = async () => {
     try {
@@ -42,6 +43,10 @@ function ProductPage() {
         const usersRes = await axios.get('http://localhost:8000/api/v1/user/alluser', config);
         if (usersRes.data.success) {
           setUsers(usersRes.data.data.users);
+          const sellerRes = await axios.get(`http://localhost:8000/api/v1/user/${product.userId}`);
+          if (sellerRes.data.success) {
+            setSellerDetails(sellerRes.data.data.user);
+          }
         }
       }
     } catch (error) {
@@ -205,6 +210,24 @@ function ProductPage() {
                 <button className={`bg-[#f54748] active:scale-90 transition duration-500 transform hover:shadow-xl shadow-md rounded-full px-8 py-3 text-lg font-medium text-white ${productDetails.stock <= 0 && 'cursor-not-allowed'}`} onClick={handleBuyNow}>
                   {isOwner ? "Cannot buy your own product" : productDetails.stock <= 0 ? "Out of Stock" : "Buy Now"}
                 </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Seller Information */}
+          <div className="bg-gray-200 border rounded p-8 mt-8">
+            <h2 className="text-2xl mb-4 font-bold">Seller Information</h2>
+            <div className="flex items-center space-x-4">
+              <img
+                src={sellerDetails.profileImage}
+                alt={`${sellerDetails.name}'s profile`}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+              <div>
+                <Link to={`/getproductBySeller/${sellerDetails._id}`}>
+                <p className="text-lg font-semibold">{sellerDetails.name}</p>
+                </Link>
+                {/* <p className="text-sm text-gray-500">{sellerDetails.email}</p> */}
               </div>
             </div>
           </div>

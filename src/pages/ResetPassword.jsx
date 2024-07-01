@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import logo from "../assets/logo.png"
 
 const ResetPasswordForm = () => {
   const { token } = useParams(); // Extract token from URL params
@@ -52,17 +53,15 @@ const ResetPasswordForm = () => {
             <li className="text-sm uppercase font-semibold text-gray-500">
               Reset password
             </li>
-            <li className="text-sm uppercase font-semibold text-gray-500">
-              Login
-            </li>
+
             <li className="w-6 h-6 rounded-full bg-red-500"></li>
           </ul>
         </div>
         <div className="text-center mb-6">
           <img
-            src="https://static.stayjapan.com/assets/top/icon/values-7dd5c8966d7a6bf57dc4bcd11b2156e82a4fd0da94a26aecb560b6949efad2be.svg"
+            src= {logo}
             alt="Reset Password"
-            className="h-16 mx-auto mb-4"
+            className="h-24 mx-auto mb-4"
           />
           <p className="text-xl font-bold text-gray-700">
             Reset your password

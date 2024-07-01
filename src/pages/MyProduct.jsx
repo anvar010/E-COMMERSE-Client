@@ -26,6 +26,7 @@ function ProductListByUser() {
     setActive(btn.id);
     setValue(btn.value);
     setCategory(btn.value); 
+
   };
 
   const getProductsByCategory = async () => {
@@ -55,23 +56,6 @@ function ProductListByUser() {
   };
   
 
-  // const getProducts = async () => {
-  //   const token = localStorage.getItem('token');
-  //   try {
-  //     const res = await axios.get(`http://localhost:8000/api/v1/product/userProducts/${user._id}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     if (res.data.success) {
-  //       const fetchedProducts = res.data.data.product;
-  //       setProduct(res.data.data.products);
-  //       console.log("Fetched products: ", res.data.data.products);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   
 
   useEffect(() => {

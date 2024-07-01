@@ -22,6 +22,11 @@ function Product({ curElem }) {
     }
   };
 
+  // Check if the product is disabled
+  if (curElem.disabled) {
+    return null; // Don't render anything if product is disabled
+  }
+
   return (
     <div className="food-card bg-red-500/10 rounded-xl flex flex-col items-center p-5 cursor-pointer">
       <div className="relative mb-3 w-full">

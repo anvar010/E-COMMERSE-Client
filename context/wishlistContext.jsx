@@ -112,6 +112,35 @@ export const WishlistProvider = ({ children }) => {
     }
   };
 
+  const handleMoveToCart = async (productId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token || !user) return;
+      
+      const response = await axios.post(
+        'http://localhost:8000/api/v1/user/movetoCart',
+        { productId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Product moved to cart");
+       
+        setWishlist(prevWishlist => prevWishlist.filter(item => item.product._id !== productId));
+      } else {
+        toast.error(response.data.error);
+      }
+    } catch (error) {
+      console.error('Error moving product to cart:', error);
+      toast.error("Failed to move product to cart");
+    }
+  };
+
+
   useEffect(() => {
     if (user) {
       getWishlist();
@@ -119,7 +148,7 @@ export const WishlistProvider = ({ children }) => {
   }, [user]);
 
   return (
-    <WishlistContext.Provider value={{ wishlist, handleAddToWishlist, handleRemoveFromWishlist, handleRemoveSingleItemFromWishlist }}>
+    <WishlistContext.Provider value={{ wishlist, handleAddToWishlist, handleRemoveFromWishlist, handleRemoveSingleItemFromWishlist,handleMoveToCart }}>
       {children}
     </WishlistContext.Provider>
   );

@@ -53,10 +53,10 @@ function Products() {
   const handleAddToCart = (productToAdd) => {
     const productInCart = cartItems.find(item => item.product._id === productToAdd._id);
     if (productInCart) {
-      // If product is already in cart, increase the quantity
+      
       addToCart({ ...productToAdd, qty: productInCart.quantity + 1 });
     } else {
-      // If product is not in cart, add it with quantity 1
+     
       addToCart({ ...productToAdd, qty: 1 });
     }
   };
@@ -69,6 +69,9 @@ function Products() {
       handleAddToWishlist(productId);
     }
   };
+
+  // Filter out disabled products
+  const filteredProducts = product?.filter(curElem => !curElem.disabled);
 
   return (
     <div className='pt-[16vh]'>
@@ -92,11 +95,11 @@ function Products() {
             ))}
           </div>
           <div className="grid py-6 gap-8 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1">
-            {product?.map((curElem) => {
+            {filteredProducts?.map((curElem) => {
               const inWishlist = wishlist.some(item => item.product._id === curElem._id);
               const productImage = curElem?.productImages && curElem.productImages.length > 0 ? curElem.productImages[0] : ''; 
               const isOwner = user && curElem.userId === user._id;
-              const stock = curElem.stock || 0; // Default to 0 if stock information is not available
+              const stock = curElem.stock || 0; 
 
               return (
                 <div className="food-card bg-red-500/10 rounded-xl flex flex-col cursor-pointer items-center p-5" key={curElem._id}>

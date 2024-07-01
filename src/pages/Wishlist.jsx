@@ -1,9 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useWishlistContext } from '../../context/wishlistContext';
+import { useCartContext } from '../../context/cartContext';
 
 function ViewWishlist() {
-  const { wishlist, handleRemoveSingleItemFromWishlist } = useWishlistContext();
+  const { wishlist, handleRemoveSingleItemFromWishlist,handleMoveToCart } = useWishlistContext();
+  const { cartItems } = useCartContext();
+
+  const isInCart = (productId) => {
+    return cartItems.some(item => item.product._id === productId);
+  };
 
   return (
     <div className='pt-14'>
@@ -35,6 +41,16 @@ function ViewWishlist() {
                 </div>
                 <div className="col-span-2 text-center">
                   <button className='text-red-500 hover:text-red-700 cursor-pointer' onClick={() => handleRemoveSingleItemFromWishlist(product.product._id)}>Remove</button>
+                </div>
+                <div className="col-span-2 text-center">
+                  {isInCart(product.product._id) ? (
+                    <span className='text-gray-500'>Already in Cart</span>
+                  ) : (
+                    <button className='text-red-500 hover:text-red-700 cursor-pointer' onClick={() => handleMoveToCart(product.product._id)}>
+                      Move to Cart
+                    </button>
+                  )}
+                 
                 </div>
               </div>
             ))}
